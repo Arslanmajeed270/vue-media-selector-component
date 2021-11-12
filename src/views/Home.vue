@@ -14,16 +14,6 @@
             </div>
           
         </div>
-
-
-        <!-- <div class="md-layout md-gutter">
-          <div class="md-layout-item md-layout md-gutter">
-             <div class="md-layout-item">Library</div>
-          <div class="md-layout-item"><i class="far fa-square"></i></div>
-          <div class="md-layout-item"><i class="fas fa-filter"></i></div>
-          <div class="md-layout-item"><i class="fas fa-list"></i></div>
-          </div>
-        </div> -->
       <div class="md-layout-item md-layout md-gutter fix-container">
           <div class="md-layout-item">
             <div class="md-title text-color">All</div>
@@ -102,23 +92,18 @@
 </template>
 
 <script>
+// import axios from "axios"
   export default {
     name: 'mediaSelector',
     data: () => ({
       showDialog: false,
-      images:[
-      {name:"image 1",photo:`../assets/apple.png`},
-      {name:"image 2",photo:`../assets/apple.png`},
-      {name:"image 3",photo:`../assets/apple.png`},
-      {name:"image 4",photo:`../assets/apple.png`},
-      {name:"image 5",photo:`../assets/apple.png`},
-      {name:"image 6",photo:`../assets/apple.png`},
-      {name:"image 7",photo:`../assets/apple.png`},
-      {name:"image 8",photo:`../assets/apple.png`},
-      {name:"image 9",photo:`../assets/apple.png`},
-      {name:"image 10",photo:`../assets/apple.png`},
-      ]
-    })
+      data:null
+    }),
+    // async created() {
+    // this.data = await axios.get('user/get-profile?access-token=1', {
+    //   responseType: 'json',
+    // });
+  // },
   }
 </script>
 

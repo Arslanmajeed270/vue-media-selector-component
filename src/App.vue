@@ -1,39 +1,37 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+<!-- Trigger/Open The Modal -->
+  <button id="myBtn" @click="toggleModal">Open Modal</button>
+    <Modal :showModal="showModal" :closeModal="toggleModal" />
 </template>
 
-
 <script>
+import Modal from './components/Modal.vue'
+
 export default {
-  name: "App"
+  name: 'App',
+  components: {
+    Modal
+  },
+  data(){
+    return {
+      showModal: false
+    }
+  },
+  methods: {
+    toggleModal(){
+      this.showModal = !this.showModal
+    }
+  }
 }
 </script>
+
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-
-.centeralign {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+  margin-top: 60px;
 }
 </style>

@@ -1,7 +1,11 @@
 <template>
 <!-- Trigger/Open The Modal -->
   <button id="myBtn" @click="toggleModal">Open Modal</button>
-    <Modal :showModal="showModal" :closeModal="toggleModal" />
+    <Modal 
+    :showModal="showModal" 
+    :closeModal="toggleModal" 
+    currentView="list"
+    />
 </template>
 
 <script>

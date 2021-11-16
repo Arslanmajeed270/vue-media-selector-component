@@ -3,19 +3,46 @@
   <div v-show="showModal" id="myModal"  class="modal">
     <!-- Modal content -->
     <div class="modal-content">
-      <!-- <div class="modal-header">
-        <span class="close" @click="closeModal">&times;</span>
-        <h2>Modal Header</h2>
-      </div>
-      <div class="modal-body">
-        <p>Some text in the Modal Body</p>
-        <p>Some other text...</p>
-      </div>
-      <div class="modal-footer">
-        <h3>Modal Footer</h3>
-      </div> -->
-      <GridScreen :closeModal="closeModal" />
-      <!-- <ListScreen :closeModal="closeModal" /> -->
+      <my-componen v-show="currentView === 'grid'">
+        <GridScreen 
+        :closeModal="closeModal" 
+        :filtersVisible="filtersVisible" 
+        :allowMultiple="allowMultiple"
+        :currentlySelected="currentlySelected"
+        :iconMappings="iconMappings"
+        :popupTitle="popupTitle"
+        :itemsPerPage="itemsPerPage"
+        :startingPage="startingPage"
+        :okButtonText="okButtonText"
+        :cancelButtonText="cancelButtonText"
+
+        :orderDirection="orderDirection"
+        :orderField="orderField"
+        :searchBox="searchBox"
+        :selectAllCheckbox="selectAllCheckbox"
+        :filter="filter"
+        />
+      </my-componen>
+       <my-componen v-show="currentView === 'list'">
+        <ListScreen 
+        :closeModal="closeModal" 
+        :filtersVisible="filtersVisible" 
+        :allowMultiple="allowMultiple"
+        :currentlySelected="currentlySelected"
+        :popupTitle="popupTitle"
+        :itemsPerPage="itemsPerPage"
+        :startingPage="startingPage"
+        :okButtonText="okButtonText"
+        :cancelButtonText="cancelButtonText"
+
+        :orderDirection="orderDirection"
+        :orderField="orderField"
+        :searchBox="searchBox"
+        :selectAllCheckbox="selectAllCheckbox"
+        :filter="filter"
+
+        />
+      </my-componen>
     </div>
 
   </div>
@@ -23,17 +50,36 @@
 
 <script>
 import GridScreen from './media_selector/GridScreen.vue';
-// import ListScreen from './media_selector/ListScreen.vue';
+import ListScreen from './media_selector/ListScreen.vue';
 
 export default {
   name: 'Modal',
   props: [
     "showModal",
     "closeModal",
+    "currentView",
+    "filtersVisible",
+    "allowMultiple",
+    "currentlySelected",
+    "iconMappings",
+    "popupTitle",
+    "itemsPerPage",
+    "startingPage",
+    "popUpMaxWidth",
+    "popUpMaxHeight",
+    "okButtonText",
+    "cancelButtonText",
+
+    // Items Hidden
+     "orderDirection",
+     "orderField",
+     "searchBox",
+     "selectAllCheckbox",
+     "filter"
   ],
   components: {
     GridScreen,
-    // ListScreen
+    ListScreen
   }
 }
 </script>

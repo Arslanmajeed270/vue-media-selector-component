@@ -1,12 +1,14 @@
 <template>
     <!-- The Modal -->
-  <div v-show="showModal" id="myModal"  class="modal">
+  <div v-show="showModal" id="myModal" :style="[{
+    'max-width': popUpMaxWidth??'100%',
+    'max-height': popUpMaxHeight??'100%'
+  }]"  class="modal">
     <!-- Modal content -->
     <div class="modal-content">
-      <my-componen v-show="currentView === 'grid'">
+      <my-component v-show="currentView === 'grid'">
         <GridScreen 
         :closeModal="closeModal" 
-        :filtersVisible="filtersVisible" 
         :allowMultiple="allowMultiple"
         :currentlySelected="currentlySelected"
         :iconMappings="iconMappings"
@@ -21,9 +23,14 @@
         :searchBox="searchBox"
         :selectAllCheckbox="selectAllCheckbox"
         :filter="filter"
+        :listView="listView"
+        :thumbnailView="thumbnailView"
+
+        :filterObjects="filterObjects"
+        :itemsObjects="itemsObjects"
         />
-      </my-componen>
-       <my-componen v-show="currentView === 'list'">
+      </my-component>
+       <my-component v-show="currentView === 'list'">
         <ListScreen 
         :closeModal="closeModal" 
         :filtersVisible="filtersVisible" 
@@ -40,9 +47,13 @@
         :searchBox="searchBox"
         :selectAllCheckbox="selectAllCheckbox"
         :filter="filter"
+        :listView="listView"
+        :thumbnailView="thumbnailView"
 
+        :filterObjects="filterObjects"
+        :itemsObjects="itemsObjects"
         />
-      </my-componen>
+      </my-component>
     </div>
 
   </div>
@@ -75,7 +86,12 @@ export default {
      "orderField",
      "searchBox",
      "selectAllCheckbox",
-     "filter"
+     "filter",
+     "listView",
+     "thumbnailView",
+
+     'filterObjects',
+     'itemsObjects'
   ],
   components: {
     GridScreen,

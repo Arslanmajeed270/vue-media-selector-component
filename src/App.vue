@@ -4,12 +4,37 @@
     <Modal 
     :showModal="showModal" 
     :closeModal="toggleModal" 
-    currentView="list"
+    :currentView="currentView"
+    :filtersVisible="filtersVisible" 
+    :allowMultiple="allowMultiple"
+    :currentlySelected="currentlySelected"
+    :iconMappings="iconMappings"
+    :popupTitle="popupTitle"
+    :itemsPerPage="itemsPerPage"
+    :startingPage="startingPage"
+    :popUpMaxWidth="popUpMaxWidth"
+    :popUpMaxHeight="popUpMaxHeight"
+    :okButtonText="okButtonText"
+    :cancelButtonText="cancelButtonText"
+
+    :orderDirection="orderDirection"
+    :orderField="orderField"
+    :searchBox="searchBox"
+    :selectAllCheckbox="selectAllCheckbox"
+    :filter="filter"
+    :listView="listView"
+    :thumbnailView="thumbnailView"
+
+    :filterObjects={filterObjects}
+    :itemsObjects="itemsObjects"
     />
 </template>
 
 <script>
-import Modal from './components/Modal.vue'
+import Modal from './components/Modal.vue';
+import itemDummyData from './data/item.json';
+import filtersDummyData from './data/filter.json';
+import selectedDummyData from './data/selected.json';
 
 export default {
   name: 'App',
@@ -18,7 +43,31 @@ export default {
   },
   data(){
     return {
-      showModal: false
+    showModal: false,
+    currentView: 'grid',
+    filtersVisible: true,
+    allowMultiple: true,
+    currentlySelected: selectedDummyData,
+    iconMappings: [],
+    popupTitle: "Visuals",
+    itemsPerPage: 18,
+    startingPage: 1,
+    popUpMaxWidth: '100%',
+    popUpMaxHeight: '100%',
+    okButtonText: "Use",
+    cancelButtonText: "Cancel",
+
+    // Items Hidden
+     orderDirection: true,
+     orderField: true,
+     searchBox: true,
+     selectAllCheckbox: true,
+     filter: true,
+     listView: true,
+     thumbnailView: true,
+
+     filterObjects: filtersDummyData,
+     itemsObjects: itemDummyData
     }
   },
   methods: {

@@ -2,10 +2,10 @@
      <div class="gridScreenWrapper">
       <div class="gridScreenHeader">
         <div class="gsHeader">
-          <p>Visuals</p>
+          <p>{{popupTitle}}</p>
         </div>
         <div class="gsOrderInput">
-          <div class="selectWrapper">
+          <div v-show="orderDirection" class="selectWrapper">
             <select class="selectBox">
               <option>Order dummy content</option>
               <option>Option 2</option>
@@ -13,7 +13,7 @@
               <option>Option 4</option>
             </select>
           </div>
-          <div class="selectWrapper">
+          <div v-show="orderField" class="selectWrapper">
             <select class="selectBox">
               <option>Order by Wane</option>
               <option>Option 2</option>
@@ -21,7 +21,7 @@
               <option>Option 4</option>
             </select>
           </div>
-          <div class="selectWrapper">
+          <div v-show="searchBox" class="selectWrapper">
             <input type="text" class="selectBox" />
             <img src="../../assets/search-solid.svg" width="15" />
           </div>
@@ -30,103 +30,25 @@
       <div class="gridScreenBody">
         <div class="gridScreenBodyContainer">
           <div class="gridScreenFilterSection">
-            <img src="../../assets/square-regular.svg" width="15" alt="checkbox" />
-            <img src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
-            <img src="../../assets/th-solid.svg" width="15" alt="checkbox" />
-            <img src="../../assets/list-solid.svg" width="15" alt="checkbox" />
+            <img v-if="selectAllCheckbox" src="../../assets/square-regular.svg" width="15" alt="checkbox" />
+            <img v-if="filter" src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
+            <img v-if="thumbnailView" src="../../assets/th-solid.svg" width="15" alt="checkbox" />
+            <img v-if="listView" src="../../assets/list-solid.svg" width="15" alt="checkbox" />
           </div>
-          <div class="gridScreenImageSection">
+          <div  class="gridScreenImageSection">
             <div
-              class="gridScreenImage"
-              :style="{ backgroundImage: 'url(' + imageUrl + ')' }"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/crown.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/flower.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/hen.jpg')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/parrot.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/pig.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/tree.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/apple.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/crown.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/flower.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/hen.jpg')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/parrot.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/pig.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/tree.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/apple.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/crown.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/flower.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/hen.jpg')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/parrot.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/pig.png')"
-            ></div>
-            <div
-              class="gridScreenImage"
-              style="background-image: url('/assets/dummy/tree.png')"
+            v-for="item in itemsObjects?.data"
+            :key="item.id"
+            class="gridScreenImage"
+            :style="{ backgroundImage: 'url(' + item.public_url + ')' }"
             ></div>
           </div>
         </div>
       </div>
       
       <div class="gridScreenFooter">
-        <button class="cancelButton" @click="closeModal">Cancel</button>
-        <button class="saveButton">Use</button>
+        <button class="cancelButton" @click="closeModal">{{cancelButtonText}}</button>
+        <button class="saveButton">{{okButtonText}}</button>
       </div>
     </div>
 </template>
@@ -136,7 +58,27 @@
 export default {
     name: "GridScreen",
     props: [
-        "closeModal"
+      "closeModal",
+      "allowMultiple",
+      "currentlySelected",
+      "iconMappings",
+      "popupTitle",
+      "itemsPerPage",
+      "startingPage",
+      "okButtonText",
+      "cancelButtonText",
+
+      // Items Hidden
+      "orderDirection",
+      "orderField",
+      "searchBox",
+      "selectAllCheckbox",
+      "filter",
+      "listView",
+      "thumbnailView",
+
+      'filterObjects',
+      'itemsObjects'
     ],
     data(){
         return{

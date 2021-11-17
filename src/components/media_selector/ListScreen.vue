@@ -2,10 +2,10 @@
        <div class="gridScreenWrapper">
       <div class="gridScreenHeader">
         <div class="gsHeader">
-          <p>References</p>
+          <p>{{popupTitle}}</p>
         </div>
         <div class="gsOrderInput">
-          <div class="selectWrapper">
+          <div v-show="orderDirection" class="selectWrapper">
             <select class="selectBox">
               <option>Order dummy content</option>
               <option>Option 2</option>
@@ -13,7 +13,7 @@
               <option>Option 4</option>
             </select>
           </div>
-          <div class="selectWrapper">
+          <div v-show="orderField" class="selectWrapper">
             <select class="selectBox">
               <option>Order by Wane</option>
               <option>Option 2</option>
@@ -21,7 +21,7 @@
               <option>Option 4</option>
             </select>
           </div>
-          <div class="selectWrapper">
+          <div  v-show="searchBox" class="selectWrapper">
             <input type="text" class="selectBox" />
             <img src="../../assets/search-solid.svg" width="15" />
           </div>
@@ -29,7 +29,8 @@
       </div>
       <div class="gridScreenBody">
         <div class="gridScreenBodyContainer">
-          <div class="gsfilterContainer">
+         
+          <div v-show="filtersVisible" class="gsfilterContainer">
             <div class="gsContentContainer">
               <p class="gsTitle">Filter</p>
               <div class="gsfilterCategory">
@@ -124,176 +125,41 @@
           <div class="gsLibraryContainer">
             <div class="gridScreenFilterSection">
               <p class="gsTitle">Library</p>
-              <label class="checkboxContainer">
+              <label v-if="selectAllCheckbox" class="checkboxContainer">
                 <input type="checkbox" />
                 <span class="checkmark"></span>
               </label>
-              <img src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
-              <img src="../../assets/th-solid.svg" width="15" alt="checkbox" />
-              <img src="../../assets/list-solid.svg" width="15" alt="checkbox" />
+              <img v-if="filter" src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
+              <img v-if="thumbnailView" src="../../assets/th-solid.svg" width="15" alt="checkbox" />
+              <img v-if="listView" src="../../assets/list-solid.svg" width="15" alt="checkbox" />
             </div>
-            <div class="liFilterCategories gs_lib">
+            <my-component  
+            v-for="item in itemsObjects?.data"
+            :key="item.id">
+              <div class="liFilterCategories gs_lib"
+            >
               <label class="checkboxContainer">
-                <input type="checkbox" />
+                <input type="checkbox"/>
                 <span class="checkmark"></span>
               </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
+              <p class="checkboxTitle">{{item.name}}</p>
             </div>
             <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
-            <div class="liFilterCategories gs_lib">
-              <label class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">Lorem ipsum dolor sit,</p>
-            </div>
-            <div class="liBorder"></div>
+            </my-component>
           </div>
+
           <div class="gsSelectedContainer">
             <p class="gsTitle">Selected</p>
             <div class="gs_section">
               <ul class="gs_ulmenu">
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
-                  <div class="liBorder"></div>
-                </li>
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
-                  <div class="liBorder"></div>
-                </li>
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
-                  <div class="liBorder"></div>
-                </li>
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
-                  <div class="liBorder"></div>
-                </li>
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
-                  <div class="liBorder"></div>
-                </li>
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
-                  <div class="liBorder"></div>
-                </li>
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
-                  <div class="liBorder"></div>
-                </li>
-                <li class="gs_litext">
-                  <p class="gs_para">Lorem ipsum dolor sit.</p>
+                <li v-for="item in currentlySelected" :key="item.id" class="gs_litext">
+                  <p class="gs_para">{{item.name}}</p>
                   <div class="liBorder"></div>
                 </li>
               </ul>
             </div>
           </div>
+          
         </div>
       </div>
       <div class="gridScreenFooter">
@@ -307,7 +173,28 @@
 export default {
     name: "ListView",
     props: [
-      "closeModal"
+      "closeModal",
+      "currentView",
+      "filtersVisible",
+      "allowMultiple",
+      "currentlySelected",
+      "popupTitle",
+      "itemsPerPage",
+      "startingPage",
+      "okButtonText",
+      "cancelButtonText",
+
+      // Items Hidden
+      "orderDirection",
+      "orderField",
+      "searchBox",
+      "selectAllCheckbox",
+      "filter",
+      "listView",
+      "thumbnailView",
+
+      'filterObjects',
+      'itemsObjects'
     ]
 }
 </script>

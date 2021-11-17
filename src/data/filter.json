@@ -1,0 +1,33 @@
+{
+    "orders": [
+      {
+        "default": true,
+        "key": "file_name",
+        "value": "File Name"
+      },
+      {
+        "key": "last_updated",
+        "value": "Last Updated"
+      }
+    ],
+    "filters": [
+      {
+        "title": "Category",
+        "key": "category",
+        "type": "checkboxGroup|dateRange|text|alpha",
+        "allowMultiple": true,
+        "values": [
+          {
+            "active": true,
+            "selected": true,
+            "key": "1",
+            "value": "CDP"
+          },
+          {
+            "key": "2",
+            "value": "Disease Progression"
+          }
+        ]
+      }
+    ]
+  }

@@ -6,17 +6,17 @@
         <p class="gsTitle">Filter</p>
         <div class="gsfilterCategory">
           <p class="gsfilterTitle">Category</p>
-          <p class="gsfilterClear">Clear</p>
+          <p class="gsfilterClear" @click="clearData('categories')">Clear</p>
         </div>
         <div class="liFilterCategories"
          v-for="singleFilter in getCategoryFilterData()?.values"
         :key="singleFilter.key"
         >
           <label class="checkboxContainer">
-            <input type="checkbox" :id="singleFilter.key" :checked="singleFilter.selected" />
+            <input type="checkbox" :id="singleFilter.key" @change="onCategoryHandler(singleFilter)" :checked="isCatetgorySelected(singleFilter.key)" />
             <span class="checkmark"></span>
           </label>
-          <p class="checkboxTitle">{{singleFilter.value}}</p>
+          <p class="checkboxTitle" @click="onCategoryHandler(singleFilter)" >{{singleFilter.value}}</p>
         </div>        
   
         <br />
@@ -26,7 +26,7 @@
         <div>
           <div class="gsfilterCategory">
             <p class="gsfilterTitle">Title</p>
-            <p class="gsfilterClear">Clear</p>
+            <p class="gsfilterClear" @click="clearData('title')">Clear</p>
           </div>
           <div class="alphabetsFilter" >
             <table>
@@ -38,6 +38,10 @@
                   <td
                     v-for="(abc, idx) in abcArr"
                     :key="idx"
+                    :class="{
+                      selectedAphabets: title.indexOf(abc) > -1
+                    }"
+                    @click="alphabetsChangeHanlder(abc)"
                   >
                   {{abc}}
                   </td>
@@ -48,7 +52,7 @@
         </div>
         <div class="gsfilterCategory">
           <p class="gsfilterTitle">Last updated</p>
-          <p class="gsfilterClear">Clear</p>
+          <p class="gsfilterClear" @click="clearData('lastUpdated')">Clear</p>
         </div>
         <div class="Checkbox-showless">
         <form>
@@ -61,10 +65,10 @@
             </tr>
             <tr>
               <th>
-                <label for="sname">To</label>
+                <label for="toInput">To</label>
               </th>
               <td>
-              <input type="text" @change="onKeyup" v-model="toInput" name="sname">
+              <input type="text" @change="onKeyup" v-model="toInput" name="toInput">
               </td>
             </tr>
           </table>
@@ -78,38 +82,68 @@
       <div class="gridScreenFilterSection">
         <p class="gsTitle">Library</p>
         <label v-if="selectAllCheckbox" class="checkboxContainer">
-          <input type="checkbox" />
+          <input type="checkbox" @change="selectAllHandler" v-model="selectAllFieldValue" />
           <span class="checkmark"></span>
         </label>
-        <img v-if="filter" src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
-        <img v-if="thumbnailView" src="../../assets/th-solid.svg" width="15" alt="checkbox" />
-        <img v-if="listView" src="../../assets/list-solid.svg" width="15" alt="checkbox" />
+        <i v-if="filter" class="fas fa-filter" :class="{activeCurrentView: filtersVisible}" @click="changeFilterHandler"></i>
+        <i v-if="thumbnailView" class="fas fa-th" @click="changeCurrentViewHandler('grid')"></i>
+        <i v-if="listView" class="fas fa-list activeCurrentView"></i>
       </div>
+
       <my-component  
-      v-for="item in itemsObjects?.data"
+      v-for="item in getItems()"
       :key="item.id">
-        <div class="liFilterCategories gs_lib"
+
+      <div 
+      class="liFilterCategories gs_lib"
+      :class="{'dx-draggable-dragging': isDragStarted}"
+      draggable="true"
+      @dragstart="startDrag($event, item)"
+      @dragleave="isDragStarted = false"
       >
-        <label class="checkboxContainer">
-          <input type="checkbox"/>
+      <div>
+         <label class="checkboxContainer">
+          <input type="checkbox" @change="onItemChangeHandler(item)" :checked="isItemMarked(item.id)"/>
           <span class="checkmark"></span>
         </label>
-        <p class="checkboxTitle">{{item.name}}</p>
+        <p class="checkboxTitle" @click="onItemChangeHandler(item)">{{item.name}}</p>
       </div>
-      <div class="liBorder"></div>
+      </div>
       </my-component>
     </div>
 
-    <div class="selectItemLineSection">
-      <div class="selectedLine"></div>
-      <i class="fas fa-caret-right assing_to_right"></i>
-      <div class="selectedLine"></div>
-    </div>
+      <div class="selectItemLineSection">
+        <div class="selectedLine"></div>
+        <i class="fas fa-caret-right assing_to_right" @click="selectItemHandler"></i>
+        <div class="selectedLine"></div>
+      </div>
+
+
+      <div class="gsSelectedContainer"
+       @drop="onDrop($event)"
+                @dragenter.prevent
+                @dragover.prevent>
+            <p class="gsTitle">Selected</p>
+            <div class="gs_section">
+              <ul class="gs_ulmenu">
+                <li 
+                v-for="item in getCurrentSelected()" 
+                :key="item.id" class="gs_litext"               
+                >
+                  <p class="gs_para">{{item.name}}</p>
+                  <div class="liBorder"></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+
     </div>
 </template>
 
 <script>
 import AlphabtsArray from '../../data/alphabets.json';
+import _ from 'lodash';
 
 export default {
     name: "ListView",
@@ -140,29 +174,56 @@ export default {
       "itemsObjects",
       "currentlySelectedHandler",
       "currentlySelectedCache",
-      "changeCurrentViewHandler"
+      "changeCurrentViewHandler",
+      "changeFilterHandler"
     ],
     data(){
       return {
         AlphabtsArrayData: [],
         fromInput: "",
         toInput: "",
-        timeout: null
+        categories: [],
+        title: "",
+        timeout: null,
+        markedItems: [],
+        selectAllFieldValue: false,
+        isDragStarted: false
       }
     },
     methods: {
       getCategoryFilterData(){
         if( this.filterObjects?.filters ) {
           const category_filters = this.filterObjects?.filters.filter( item => item.key === "category" )
-          console.log('checking category_filters: ', category_filters)
           return category_filters[0];
         }
         return []
       },
-      async onChangeHandler(e){
+      isCatetgorySelected(id){
+        const index = this.categories.findIndex(elem => elem.key === id)
+        if(index > -1) return true
+        else return false
+      },
+      getFilterExtension(){
+        const categoriesString = this.categories.map(_category => _category.key);
+        return `/?category=${categoriesString.toString()}&title=${this.title}&from=${this.fromInput}&to=${this.toInput}"`
+      },
+      onChangeHandler(e){
         const { name , value } = e.target;
-        this[name] = value
-        await this.loadData();
+        this[name] = value;
+        const extension = this.getFilterExtension();
+        this.loadDataFilteredData(extension);
+      },
+    async onCategoryHandler(_category){
+         const index = this.categories.findIndex(elem => elem.key === _category.key)
+        if(index > -1){
+          this.categories.splice(index, 1)
+        }else{
+          this.categories.push({
+            ..._category
+          })
+        }
+        const extension = this.getFilterExtension();
+        this.loadDataFilteredData(extension);
       },
       onKeyup(e){
        clearTimeout(this.timeout);
@@ -170,14 +231,90 @@ export default {
           this.onChangeHandler(e)
         }, 200);
       },
+      alphabetsChangeHanlder(_alphabet){
+        const index = this.title.indexOf(_alphabet)
+        if(index < 0) {
+          this.title += _alphabet
+          const extension = this.getFilterExtension();
+           this.loadDataFilteredData(extension);
+          }     
+      },
+      clearData(fieldName){
+        if(fieldName === "categories") this.categories = []
+        if(fieldName === "title") this.title = ""
+        if( fieldName ===  'lastUpdated'){ 
+          this.fromInput = ''; 
+          this.toInput = ''; 
+        }
+        const extension = this.getFilterExtension();
+        this.loadDataFilteredData(extension);
+      },
+      isItemMarked(_id){
+        const index = this.markedItems.findIndex(elem => elem.id === _id);
+        if( index > -1 ) return true
+        return false
+      },
+       getItems(){
+        const result = [];
+        this.itemsObjects?.data?.map(item => {
+          const index = this.currentlySelectedCache.findIndex(_item => _item.id === item.id)
+          if( index === -1 ) result.push({...item})
+          return item
+        })
+        return result
+      },
+      onItemChangeHandler(item){
+        const index = this.markedItems.findIndex(elem => elem.id === item.id)
+        if( index < 0 ) {
+          this.markedItems.push({...item})
+        }
+        else
+          this.markedItems.splice(index, 1)
+      },
+      selectAllHandler(){
+        if(!this.selectAllFieldValue){
+          this.markedItems = []
+          }else{
+            this.markedItems = this.getItems();
+          }
+      },
+       selectItemHandler(){
+         const clonedArray = _.cloneDeep(this.currentlySelectedCache);
+         Array.prototype.push.apply(clonedArray, this.markedItems);
+         this.currentlySelectedHandler(clonedArray)
+         this.markedItems = []
+      },
+      getCurrentSelected(){
+        return this.currentlySelectedCache
+      },
+      startDrag (evt, item) {
+        this.isDragStarted = true
+        evt.dataTransfer.dropEffect = 'move'
+        evt.dataTransfer.effectAllowed = 'move'
+        evt.dataTransfer.setData('itemID', item.id)
+      },
+      onDrop (evt) {
+        const itemID = evt.dataTransfer.getData('itemID')
+        const item = this.getItems().find(item => item.id === Number(itemID))
+        const clonedArray = _.cloneDeep(this.currentlySelectedCache);
+         Array.prototype.push.apply(clonedArray, this.markedItems);
+         clonedArray.push({...item})
+         this.currentlySelectedHandler(clonedArray)
+      }
     },
-      async mounted() {
-     await this.loadData()
-     console.log('checking AlphabtsArray: ', AlphabtsArray);
-     this.AlphabtsArrayData = AlphabtsArray
+    async mounted() {
+      await this.loadData()
+      this.AlphabtsArrayData = AlphabtsArray
+       this.getCategoryFilterData()?.values.map(_category => {
+        if(_category.selected){
+          this.categories.push({
+            ..._category
+          })
+        }
+      } )
     },
     unmounted(){
-      this.currentlySelectedHandler([], true)
+      this.currentlySelectedHandler([], true);
     }
 }
 </script>
@@ -347,9 +484,44 @@ export default {
       }
       .gs_lib {
         margin-top: 17px;
+        width: 100%;
+        height: 40px;
+        border-bottom: 2px solid #9d9d9c;
+        cursor: grab;
+      }
+      .gs_lib > div {
+        height: 100%;
+        width: 100%;
+      }
+      .gs_lib > div > label > span {
+        left: 10px;
+        top: 10px;
+      }
+       .gs_lib p {
+         margin-top: 2%;
+        text-align: left;
+        margin-left: 10%;
+      }
+      .dx-draggable-dragging > div{
+          background-color: black !important;
+          border: 2px solid black !important;
       }
       .liBorder {
         border-bottom: 1px solid grey;
+      }
+            
+      .gs_para {
+        color: white;
+        margin-left: 10px;
+        text-align: left;
+      }
+      li.gs_litext {
+        color: white;
+        list-style: auto;
+        margin-left: -24px;
+      }
+      ul.gs_ulmenu {
+        margin-top: -5px;
       }
 
   table {
@@ -375,4 +547,14 @@ export default {
   .selectedAphabets {
     color: #fff;
   }
+
+  .gridScreenFilterSection i {
+        font-size: 16px;
+        color: #fff;
+        cursor: pointer;
+      }
+      .activeCurrentView {
+        color: #fcb13b !important;
+      }
+
 </style>

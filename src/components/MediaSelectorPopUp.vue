@@ -90,6 +90,7 @@
         :currentlySelectedCache="currentlySelectedCache"
         :currentlySelectedHandler="currentlySelectedHandler"
         :changeCurrentViewHandler="changeCurrentViewHandler"
+        :changeFilterHandler="changeFilterHandler"
         />
       </my-component>
 
@@ -141,6 +142,7 @@ export default {
      "currentSelectedHandler",
      "changeCurrentViewHandler",
      "onSaveHandler",
+     "changeFilterHandler",
 
      "urls"
   ],

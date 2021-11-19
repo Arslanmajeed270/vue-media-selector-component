@@ -27,6 +27,7 @@
     :currentSelectedHandler="currentSelectedHandler"
     :changeCurrentViewHandler="changeCurrentViewHandler"
     :onSaveHandler="onSaveHandler"
+    :changeFilterHandler="changeFilterHandler"
 
     :urls="urls"
     />
@@ -83,7 +84,11 @@ export default {
     },
     onSaveHandler(selectedItemsProps){
       console.log("checking selectedItemsProps: ", selectedItemsProps);
+      this.currentlySelected = selectedItemsProps
       this.showModal = false
+    },
+    changeFilterHandler(){
+      this.filtersVisible = !this.filtersVisible
     }
   }
 }

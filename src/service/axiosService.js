@@ -3,7 +3,6 @@ import axios from 'axios';
 export const getFilterData = async (filterUrl) => {
     try {
        const response = await  axios.get(filterUrl)
-       console.log('checking response: ', response);
        if( response?.data ) return response.data
        return "No result found!"
     } catch (error) {
@@ -14,7 +13,6 @@ export const getFilterData = async (filterUrl) => {
 export const getItemData = async (itemUrl) => {
     try {
        const response = await  axios.get(itemUrl)
-       console.log('checking response: ', response);
        if( response?.data ) return response.data
        return "No result found!"
     } catch (error) {

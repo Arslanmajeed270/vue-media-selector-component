@@ -58,7 +58,6 @@ export default {
     ],
     data(){
         return{
-            imageUrl: '/assets/dummy/apple.png',
             selectAllFieldValue: false,
         }
     },

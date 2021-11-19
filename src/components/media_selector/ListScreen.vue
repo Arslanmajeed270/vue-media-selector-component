@@ -1,175 +1,116 @@
 <template>
-       <div class="gridScreenWrapper">
-      <div class="gridScreenHeader">
-        <div class="gsHeader">
-          <p>{{popupTitle}}</p>
-        </div>
-        <div class="gsOrderInput">
-          <div v-show="orderDirection" class="selectWrapper">
-            <select class="selectBox">
-              <option>Order dummy content</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-            </select>
-          </div>
-          <div v-show="orderField" class="selectWrapper">
-            <select class="selectBox">
-              <option>Order by Wane</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-            </select>
-          </div>
-          <div  v-show="searchBox" class="selectWrapper">
-            <input type="text" class="selectBox" />
-            <img src="../../assets/search-solid.svg" width="15" />
-          </div>
-        </div>
-      </div>
-      <div class="gridScreenBody">
-        <div class="gridScreenBodyContainer">
-         
-          <div v-show="filtersVisible" class="gsfilterContainer">
-            <div class="gsContentContainer">
-              <p class="gsTitle">Filter</p>
-              <div class="gsfilterCategory">
-                <p class="gsfilterTitle">Category</p>
-                <p class="gsfilterClear">Clear</p>
-              </div>
-              <div class="liFilterCategories">
-                <label class="checkboxContainer">
-                  <input type="checkbox" />
-                  <span class="checkmark"></span>
-                </label>
-                <p class="checkboxTitle">OOP</p>
-              </div>
-              <div class="liFilterCategories">
-                <label class="checkboxContainer">
-                  <input type="checkbox" />
-                  <span class="checkmark"></span>
-                </label>
-                <p class="checkboxTitle">Lorem ipsum, dolor sit .</p>
-              </div>
-              <div class="liFilterCategories">
-                <label class="checkboxContainer">
-                  <input type="checkbox" />
-                  <span class="checkmark"></span>
-                </label>
-                <p class="checkboxTitle">Lorem ipsum, dolor sit .</p>
-              </div>
-              <div class="liFilterCategories">
-                <label class="checkboxContainer">
-                  <input type="checkbox" />
-                  <span class="checkmark"></span>
-                </label>
-                <p class="checkboxTitle">Lorem ipsum, dolor sit .</p>
-              </div>
-              <div class="liFilterCategories">
-                <label class="checkboxContainer">
-                  <input type="checkbox" />
-                  <span class="checkmark"></span>
-                </label>
-                <p class="checkboxTitle">Lorem ipsum, dolor sit .</p>
-              </div>
-              <div class="liFilterCategories">
-                <label class="checkboxContainer">
-                  <input type="checkbox" />
-                  <span class="checkmark"></span>
-                </label>
-                <p class="checkboxTitle">Lorem ipsum, dolor sit .</p>
-              </div>
-              <div class="liFilterCategories">
-                <label class="checkboxContainer">
-                  <input type="checkbox" />
-                  <span class="checkmark"></span>
-                </label>
-                <p class="checkboxTitle"></p>
-              </div>
-              <div class="Checkbox-showless">
-                <p>Showless</p>
-              </div>
-              <div class="gsfilterCategory">
-                <p class="gsfilterTitle">Category</p>
-                <p class="gsfilterClear">Clear</p>
-              </div>
-              <div class="gsfilterCategory">
-                <p class="gsfilterTitle">Category</p>
-                <p class="gsfilterClear">Clear</p>
-              </div>
-              <div class="Checkbox-showless">
-                <form class="form_checkbox" action="/action_page.php">
-                  <label class="form_check" for="fname">Form:</label><br />
-                  <input
-                    style="width: 140px"
-                    type="text"
-                    id="fname"
-                    name="fname"
-                    value=""
-                  /><br />
-                </form>
-                <form class="form_checkbox" action="/action_page.php">
-                  <label class="form_check" for="fname">Form:</label><br />
-                  <input
-                    style="width: 140px"
-                    type="text"
-                    id="fname"
-                    name="fname"
-                    value=""
-                  /><br />
-                </form>
-              </div>
-            </div>
-          </div>
+ <div class="gridScreenBodyContainer">
 
-          <div class="gsLibraryContainer">
-            <div class="gridScreenFilterSection">
-              <p class="gsTitle">Library</p>
-              <label v-if="selectAllCheckbox" class="checkboxContainer">
-                <input type="checkbox" />
-                <span class="checkmark"></span>
-              </label>
-              <img v-if="filter" src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
-              <img v-if="thumbnailView" src="../../assets/th-solid.svg" width="15" alt="checkbox" />
-              <img v-if="listView" src="../../assets/list-solid.svg" width="15" alt="checkbox" />
-            </div>
-            <my-component  
-            v-for="item in itemsObjects?.data"
-            :key="item.id">
-              <div class="liFilterCategories gs_lib"
-            >
-              <label class="checkboxContainer">
-                <input type="checkbox"/>
-                <span class="checkmark"></span>
-              </label>
-              <p class="checkboxTitle">{{item.name}}</p>
-            </div>
-            <div class="liBorder"></div>
-            </my-component>
+    <div  class="gsfilterContainer">
+      <div v-show="filtersVisible" class="gsContentContainer">
+        <p class="gsTitle">Filter</p>
+        <div class="gsfilterCategory">
+          <p class="gsfilterTitle">Category</p>
+          <p class="gsfilterClear">Clear</p>
+        </div>
+        <div class="liFilterCategories"
+         v-for="singleFilter in getCategoryFilterData()?.values"
+        :key="singleFilter.key"
+        >
+          <label class="checkboxContainer">
+            <input type="checkbox" :id="singleFilter.key" :checked="singleFilter.selected" />
+            <span class="checkmark"></span>
+          </label>
+          <p class="checkboxTitle">{{singleFilter.value}}</p>
+        </div>        
+  
+        <br />
+        <div class="Checkbox-showless">
+          <p>Showless</p>
+        </div>
+        <div>
+          <div class="gsfilterCategory">
+            <p class="gsfilterTitle">Title</p>
+            <p class="gsfilterClear">Clear</p>
           </div>
+          <div class="alphabetsFilter" >
+            <table>
+            <tbody>
+                <tr  
+                 v-for="(abcArr, index) in AlphabtsArrayData"
+                :key="index"
+                >
+                  <td
+                    v-for="(abc, idx) in abcArr"
+                    :key="idx"
+                  >
+                  {{abc}}
+                  </td>
+                </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <div class="gsfilterCategory">
+          <p class="gsfilterTitle">Last updated</p>
+          <p class="gsfilterClear">Clear</p>
+        </div>
+        <div class="Checkbox-showless">
+        <form>
+          <table cellspacing="10">
+            <tr>
+              <th><label for="fromInput">From</label></th>
+              <td>
+                <input type="text" @change="onKeyup" v-model="fromInput" name="fromInput" >
+              </td>
+            </tr>
+            <tr>
+              <th>
+                <label for="sname">To</label>
+              </th>
+              <td>
+              <input type="text" @change="onKeyup" v-model="toInput" name="sname">
+              </td>
+            </tr>
+          </table>
 
-          <div class="gsSelectedContainer">
-            <p class="gsTitle">Selected</p>
-            <div class="gs_section">
-              <ul class="gs_ulmenu">
-                <li v-for="item in currentlySelected" :key="item.id" class="gs_litext">
-                  <p class="gs_para">{{item.name}}</p>
-                  <div class="liBorder"></div>
-                </li>
-              </ul>
-            </div>
-          </div>
-          
+          </form>
         </div>
       </div>
-      <div class="gridScreenFooter">
-        <button class="cancelButton" @click="closeModal">Cancel</button>
-        <button class="saveButton">Use</button>
+    </div>
+
+    <div class="gsLibraryContainer">
+      <div class="gridScreenFilterSection">
+        <p class="gsTitle">Library</p>
+        <label v-if="selectAllCheckbox" class="checkboxContainer">
+          <input type="checkbox" />
+          <span class="checkmark"></span>
+        </label>
+        <img v-if="filter" src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
+        <img v-if="thumbnailView" src="../../assets/th-solid.svg" width="15" alt="checkbox" />
+        <img v-if="listView" src="../../assets/list-solid.svg" width="15" alt="checkbox" />
       </div>
+      <my-component  
+      v-for="item in itemsObjects?.data"
+      :key="item.id">
+        <div class="liFilterCategories gs_lib"
+      >
+        <label class="checkboxContainer">
+          <input type="checkbox"/>
+          <span class="checkmark"></span>
+        </label>
+        <p class="checkboxTitle">{{item.name}}</p>
+      </div>
+      <div class="liBorder"></div>
+      </my-component>
+    </div>
+
+    <div class="selectItemLineSection">
+      <div class="selectedLine"></div>
+      <i class="fas fa-caret-right assing_to_right"></i>
+      <div class="selectedLine"></div>
+    </div>
     </div>
 </template>
 
 <script>
+import AlphabtsArray from '../../data/alphabets.json';
+
 export default {
     name: "ListView",
     props: [
@@ -193,50 +134,58 @@ export default {
       "listView",
       "thumbnailView",
 
-      'filterObjects',
-      'itemsObjects'
-    ]
+      "loadData",
+      "filterObjects",
+      "loadDataFilteredData",
+      "itemsObjects",
+      "currentlySelectedHandler",
+      "currentlySelectedCache",
+      "changeCurrentViewHandler"
+    ],
+    data(){
+      return {
+        AlphabtsArrayData: [],
+        fromInput: "",
+        toInput: "",
+        timeout: null
+      }
+    },
+    methods: {
+      getCategoryFilterData(){
+        if( this.filterObjects?.filters ) {
+          const category_filters = this.filterObjects?.filters.filter( item => item.key === "category" )
+          console.log('checking category_filters: ', category_filters)
+          return category_filters[0];
+        }
+        return []
+      },
+      async onChangeHandler(e){
+        const { name , value } = e.target;
+        this[name] = value
+        await this.loadData();
+      },
+      onKeyup(e){
+       clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          this.onChangeHandler(e)
+        }, 200);
+      },
+    },
+      async mounted() {
+     await this.loadData()
+     console.log('checking AlphabtsArray: ', AlphabtsArray);
+     this.AlphabtsArrayData = AlphabtsArray
+    },
+    unmounted(){
+      this.currentlySelectedHandler([], true)
+    }
 }
 </script>
 
 
 <style scoped>
 
- .gridScreenWrapper {
-        height: 100%;
-        width: 100%;
-      }
-      .gridScreenHeader {
-        height: 8%;
-        background-color: #9d9d9c;
-        width: 100%;
-        display: flex;
-        margin: auto;
-      }
-
-      .gsHeader {
-        flex: 3;
-        margin: auto;
-        text-align: left;
-      }
-      .gsHeader > p {
-        margin-left: 10%;
-        font-size: 18px;
-        color: white;
-      }
-      .gsOrderInput {
-        flex: 4;
-        margin: auto;
-        display: flex;
-        gap: 40px;
-      }
-      .gridScreenBody {
-        height: auto;
-        max-height: 78%;
-        min-height: 78%;
-        overflow-y: auto;
-      }
-      .gridScreenBodyContainer {
+.gridScreenBodyContainer {
         width: 92%;
         margin: auto;
         padding: 20px 0;
@@ -244,64 +193,23 @@ export default {
         grid-template-areas: "filter filter library library library divider selected selected selected";
         grid-gap: 2em;
       }
-      .gridScreenFooter {
-        height: 8%;
-        border-top: 3px solid #7e7e7e;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 3em;
-      }
+
+  .selectedLine {
+    width: 3px;
+    background-color: #FCB13B;
+    height: 45%;
+    margin: auto;
+  }
+  .assing_to_right {
+    color: #FCB13B;
+    margin: 20px auto;
+    font-size: 50px;
+    cursor: pointer;
+  }
 
       .gridScreenFilterSection {
         display: flex;
         gap: 20px;
-      }
-
-      .cancelButton {
-        background-color: transparent;
-        border-radius: 5px;
-        font-size: 17px;
-        font-family: "Source Sans Pro", sans-serif;
-        padding: 2px 18px;
-        border: 2px solid #fff;
-        color: #fff;
-        width: 120px;
-        cursor: pointer;
-      }
-
-      .saveButton {
-        background-color: #fcb13b;
-        border-radius: 5px;
-        font-size: 17px;
-        font-family: "Source Sans Pro", sans-serif;
-        padding: 2px 18px;
-        color: black;
-        width: 120px;
-        border: 0px;
-        cursor: pointer;
-      }
-
-      /* Select box css */
-      .selectWrapper {
-        border-radius: 36px;
-        display: inline-block;
-        overflow: hidden;
-        background: transparent;
-        border: 3px solid #e4a644;
-        padding: 0px 5px;
-        display: flex;
-      }
-      .selectBox {
-        width: 200px;
-        border: 0px;
-        background: transparent;
-        color: #fff;
-        outline: #e4a644;
-      }
-
-      .selectBox > option {
-        background: #9d9d9c;
       }
 
       .gsfilterContainer {
@@ -317,6 +225,7 @@ export default {
       .gsLibraryContainer {
         grid-area: library;
       }
+
       .gsSelectedContainer {
         grid-area: selected;
       }
@@ -337,6 +246,7 @@ export default {
       .gsfilterClear {
         float: right;
         color: #fff;
+        cursor: pointer;
       }
 
       /* checkbox */
@@ -425,6 +335,7 @@ export default {
 
       .checkboxTitle {
         margin: 0px;
+        cursor: pointer;
       }
 
       /* ################## */
@@ -434,32 +345,34 @@ export default {
         font-weight: bold;
         text-align: left;
       }
-      .form_checkbox {
-        position: relative;
-        display: flex;
-      }
-      .form_check {
-        display: flex;
-        color: white;
-        padding-right: 10px;
-      }
       .gs_lib {
         margin-top: 17px;
       }
       .liBorder {
         border-bottom: 1px solid grey;
       }
-      .gs_para {
-        color: white;
-        margin-left: 10px;
-      }
-      li.gs_litext {
-        color: white;
-        list-style: auto;
-        margin-left: -24px;
-      }
-      ul.gs_ulmenu {
-        margin-top: -5px;
-      }
 
+  table {
+    color: #fff;
+    margin: 0px;
+    width: 100%;
+  }
+  th {
+    text-align: left;
+  }
+
+  .alphabetsFilter table {
+    color: #8d8d8c;
+  }
+  
+  .alphabetsFilter table tbody tr{
+   height: 30px;
+  }
+   .alphabetsFilter table tbody tr td{
+     cursor: pointer;
+  }
+
+  .selectedAphabets {
+    color: #fff;
+  }
 </style>

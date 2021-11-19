@@ -1,59 +1,31 @@
 <template>
-     <div class="gridScreenWrapper">
-      <div class="gridScreenHeader">
-        <div class="gsHeader">
-          <p>{{popupTitle}}</p>
-        </div>
-        <div class="gsOrderInput">
-          <div v-show="orderDirection" class="selectWrapper">
-            <select class="selectBox">
-              <option>Order dummy content</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-            </select>
-          </div>
-          <div v-show="orderField" class="selectWrapper">
-            <select class="selectBox">
-              <option>Order by Wane</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-            </select>
-          </div>
-          <div v-show="searchBox" class="selectWrapper">
-            <input type="text" class="selectBox" />
-            <img src="../../assets/search-solid.svg" width="15" />
-          </div>
-        </div>
-      </div>
-      <div class="gridScreenBody">
-        <div class="gridScreenBodyContainer">
-          <div class="gridScreenFilterSection">
-            <img v-if="selectAllCheckbox" src="../../assets/square-regular.svg" width="15" alt="checkbox" />
-            <img v-if="filter" src="../../assets/filter-solid.svg" width="15" alt="checkbox" />
-            <img v-if="thumbnailView" src="../../assets/th-solid.svg" width="15" alt="checkbox" />
-            <img v-if="listView" src="../../assets/list-solid.svg" width="15" alt="checkbox" />
-          </div>
-          <div  class="gridScreenImageSection">
-            <div
-            v-for="item in itemsObjects?.data"
-            :key="item.id"
-            class="gridScreenImage"
-            :style="{ backgroundImage: 'url(' + item.public_url + ')' }"
-            ></div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="gridScreenFooter">
-        <button class="cancelButton" @click="closeModal">{{cancelButtonText}}</button>
-        <button class="saveButton">{{okButtonText}}</button>
-      </div>
+  <div class="gridScreenBodyContainer">
+    <div class="gridScreenFilterSection">
+      <label v-if="selectAllCheckbox" class="checkboxContainer">
+        <input type="checkbox"  @change="selectAllHandler" v-model="selectAllFieldValue"/>
+        <span class="checkmark"></span>
+      </label>
+      <i v-if="filter" class="fas fa-filter" @click="changeCurrentViewHandler('list')"></i>
+      <i v-if="thumbnailView" class="fas fa-th activeCurrentView"></i>
+      <i v-if="listView" class="fas fa-list" @click="changeCurrentViewHandler('list')"></i>
     </div>
+    <div  v-if="itemsObjects?.data?.length" class="gridScreenImageSection">
+      <div
+      v-for="item in itemsObjects?.data"
+      :key="item.id"
+        class="gridScreenImage"
+      :class="{selectedItem: isItemSelected(item.id)}"
+      :style="{ backgroundImage: 'url(' + item.public_url + ')' }"
+      @click="selectItemHandler(item)"
+      ></div>
+    </div>
+    <h2 v-else class="emptyData">No data found!</h2>
+  </div>
 </template>
 
 <script>
+
+import _ from 'lodash';
 
 export default {
     name: "GridScreen",
@@ -77,70 +49,75 @@ export default {
       "listView",
       "thumbnailView",
 
-      'filterObjects',
-      'itemsObjects'
+      "loadData",
+      "filterObjects",
+      "itemsObjects",
+      "currentlySelectedHandler",
+      "currentlySelectedCache",
+      "changeCurrentViewHandler"
     ],
     data(){
         return{
-            imageUrl: '/assets/dummy/apple.png'
+            imageUrl: '/assets/dummy/apple.png',
+            selectAllFieldValue: false,
         }
-    }
-
+    },
+    methods: {
+      selectAllHandler(){
+        if(!this.selectAllFieldValue){
+          this.currentlySelectedHandler([])
+          }else{
+            const clonedItemObject = _.cloneDeep(this.itemsObjects);
+            this.currentlySelectedHandler(clonedItemObject?.data)
+          }
+      },
+      isItemSelected(id){
+        const index = this.currentlySelectedCache.findIndex(res => res.id === id)
+        if(index > -1) return true
+        return false
+      },
+      selectItemHandler(itemProps){
+         let clonedArray = _.cloneDeep(this.currentlySelectedCache);
+        const index = clonedArray.findIndex(item => item.id === itemProps.id)
+        if(index > -1){
+           clonedArray.splice(index, 1)
+        }else{
+          // eslint-disable-next-line vue/no-mutating-props
+          clonedArray.push({
+            ...itemProps
+          })
+        }
+         this.currentlySelectedHandler(clonedArray)
+      }
+    },
+   async mounted() {
+     await this.loadData()
+  },
+  unmounted(){
+    this.currentlySelectedHandler([], true)
+  }
 }
 </script>
 
 <style scoped>
- .gridScreenWrapper {
-        height: 100%;
-        width: 100%;
-      }
-      .gridScreenHeader {
-        height: 8%;
-        background-color: #9d9d9c;
-        width: 100%;
-        display: flex;
-        margin: auto;
-      }
-
-      .gsHeader {
-        flex: 3;
-        margin: auto;
-        text-align: left;
-      }
-      .gsHeader > p {
-        margin-left: 10%;
-        font-size: 18px;
-        color: white;
-      }
-      .gsOrderInput {
-        flex: 4;
-        margin: auto;
-        display: flex;
-        gap: 40px;
-      }
-      .gridScreenBody {
-        height: auto;
-        max-height: 78%;
-        min-height: 78%;
-        overflow-y: auto;
-      }
+  .emptyData {
+    color: #fff;
+  }
       .gridScreenBodyContainer {
         width: 85%;
         margin: auto;
         padding: 20px 0;
       }
-      .gridScreenFooter {
-        height: 8%;
-        border-top: 3px solid #7e7e7e;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 3em;
-      }
 
       .gridScreenFilterSection {
         display: flex;
         gap: 20px;
+      }
+
+      .gridScreenFilterSection i {
+        font-size: 16px;
+        color: #fff;
+        cursor: pointer;
       }
 
       .gridScreenImageSection {
@@ -152,53 +129,90 @@ export default {
       .gridScreenImage {
         width: 160px;
         height: 100px;
-        background-size: 160px 100px;
+        background-size: 150px 90px;
+        background-repeat: no-repeat;
+        background-position: center;
+        border-radius: 5px;
+        cursor: pointer;
       }
 
-      .cancelButton {
-        background-color: transparent;
-        border-radius: 5px;
-        font-size: 17px;
-        font-family: "Source Sans Pro", sans-serif;
-        padding: 2px 18px;
+      .selectedItem {
         border: 2px solid #fff;
-        color: #fff;
-        width: 120px;
+      }
+
+      .activeCurrentView {
+        color: #fcb13b !important;
+      }
+       /* checkbox */
+      .checkboxContainer {
+        display: block;
+        position: relative;
+        padding-left: 20px;
         cursor: pointer;
+        font-size: 16px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
 
-      .saveButton {
-        background-color: #fcb13b;
-        border-radius: 5px;
-        font-size: 17px;
-        font-family: "Source Sans Pro", sans-serif;
-        padding: 2px 18px;
-        color: black;
-        width: 120px;
-        border: 0px;
+      /* Hide the browser's default checkbox */
+      .checkboxContainer input {
+        position: absolute;
+        opacity: 0;
         cursor: pointer;
+        height: 0;
+        width: 0;
       }
 
-      /* Select box css */
-      .selectWrapper {
-        border-radius: 36px;
-        display: inline-block;
-        overflow: hidden;
-        background: transparent;
-        border: 3px solid #e4a644;
-        padding: 0px 5px;
-        display: flex;
-      }
-      .selectBox {
-        width: 200px;
-        border: 0px;
-        background: transparent;
-        color: #fff;
-        outline: #e4a644;
+      /* Create a custom checkbox */
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 16px;
+        width: 16px;
+        background-color: #707070;
+        border: 2px solid #fff;
+        border-radius: 4px;
       }
 
-      .selectBox > option {
-        background: #9d9d9c;
+      /* On mouse-over, add a grey background color */
+      .checkboxContainer:hover input ~ .checkmark {
+        background-color: #ccc;
       }
+
+      /* When the checkbox is checked, add a blue background */
+      .checkboxContainer input:checked ~ .checkmark {
+        background-color: #707070;
+      }
+
+      /* Create the checkmark/indicator (hidden when not checked) */
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      /* Show the checkmark when checked */
+      .checkboxContainer input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      /* Style the checkmark/indicator */
+      .checkboxContainer .checkmark:after {
+        left: 5px;
+        top: 1px;
+        width: 3px;
+        height: 7px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }
+
+      /* end checkbox */
+
 </style>
 

@@ -1,7 +1,7 @@
 <template>
 <!-- Trigger/Open The Modal -->
   <button id="myBtn" @click="toggleModal">Open Modal</button>
-    <Modal 
+    <MediaSelectorPopUp 
     :showModal="showModal" 
     :closeModal="toggleModal" 
     :currentView="currentView"
@@ -24,29 +24,33 @@
     :filter="filter"
     :listView="listView"
     :thumbnailView="thumbnailView"
+    :currentSelectedHandler="currentSelectedHandler"
+    :changeCurrentViewHandler="changeCurrentViewHandler"
+    :onSaveHandler="onSaveHandler"
 
-    :filterObjects={filterObjects}
-    :itemsObjects="itemsObjects"
+    :urls="urls"
     />
 </template>
 
 <script>
-import Modal from './components/Modal.vue';
-import itemDummyData from './data/item.json';
-import filtersDummyData from './data/filter.json';
+import MediaSelectorPopUp from './components/MediaSelectorPopUp.vue';
 import selectedDummyData from './data/selected.json';
 
 export default {
   name: 'App',
   components: {
-    Modal
+    MediaSelectorPopUp
   },
   data(){
     return {
     showModal: false,
-    currentView: 'grid',
+    currentView: 'list', // grid | list
     filtersVisible: true,
     allowMultiple: true,
+    urls: {
+      filterUrl: "http://localhost:8080/api/filter.json",
+      itemUrl: "http://localhost:8080/api/item.json",
+    },
     currentlySelected: selectedDummyData,
     iconMappings: [],
     popupTitle: "Visuals",
@@ -65,14 +69,21 @@ export default {
      filter: true,
      listView: true,
      thumbnailView: true,
-
-     filterObjects: filtersDummyData,
-     itemsObjects: itemDummyData
     }
   },
   methods: {
     toggleModal(){
       this.showModal = !this.showModal
+    },
+    currentSelectedHandler(updatedObject){
+      this.currentlySelected = updatedObject
+    },
+    changeCurrentViewHandler(viewProps){
+      this.currentView = viewProps
+    },
+    onSaveHandler(selectedItemsProps){
+      console.log("checking selectedItemsProps: ", selectedItemsProps);
+      this.showModal = false
     }
   }
 }

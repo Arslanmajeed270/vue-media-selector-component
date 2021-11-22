@@ -21,9 +21,10 @@
           </div>
           <div v-show="orderField" class="selectWrapper">
             <select class="selectBox" name="orderFieldValue" @change="onChangeHandler"  v-model="orderFieldValue" >
-              <option value="Order by filename">Order by filename</option>
-              <option value="Order by id">Order by id</option>
-              <option value="Order by date">Order by date</option>
+              <option  
+              v-for="order in filterObjects?.orders" 
+              :key="order.key" 
+              :value="order.key">{{order.value}}</option>
             </select>
           </div>
           <div  v-show="searchBox" class="selectWrapper">
@@ -151,7 +152,7 @@ export default {
       filterObjects: {},
       itemsObjects: {},
       orderDirectionValue: "Order descending",
-      orderFieldValue: "Order by filename",
+      orderFieldValue: "",
       searchFieldValue:"",
       currentlySelectedCache: [],
       timeout: null
@@ -163,6 +164,12 @@ export default {
       if( filterResult !== "No result found!" ) this.filterObjects = filterResult
       const itemResult = await getItemData(this.urls.itemUrl+`?orderDirection=${this.orderDirectionValue}&orderField=${this.orderFieldValue}&searchBox=${this.searchFieldValue}`);
       if( itemResult !== "No result found!" ) this.itemsObjects = itemResult
+      if( this.orderFieldValue === "" ) {
+        filterResult.orders.map(order => {
+          if( order.default ) this.orderFieldValue = order.key
+          return order
+        })
+      }
     },
      async loadDataFilteredData(extension){
       const filterResult = await getFilterData(this.urls.filterUrl+extension);

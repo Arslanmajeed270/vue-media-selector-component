@@ -36,6 +36,13 @@
 <script>
 import MediaSelectorPopUp from './components/MediaSelectorPopUp.vue';
 import selectedDummyData from './data/selected.json';
+import AudioIcon from './assets/icons/file-audio-regular.svg';
+import ZipIcon from './assets/icons/file-archive-regular.svg';
+import ExcelIcon from './assets/icons/file-excel-regular.svg';
+import PdfIcon from './assets/icons/file-pdf-regular.svg';
+import WordIcon from './assets/icons/file-word-regular.svg';
+import VideoIcon from './assets/icons/video-solid.svg';
+import ImageIcon from './assets/icons/image-solid.svg';
 
 export default {
   name: 'App',
@@ -53,7 +60,34 @@ export default {
       itemUrl: "http://localhost:8080/api/item.json",
     },
     currentlySelected: selectedDummyData,
-    iconMappings: [],
+    iconMappings: [{
+      type: "audio",
+      icon: AudioIcon
+    },
+    {
+      type: "zip",
+      icon: ZipIcon
+    }, {
+      type: "excel",
+      icon: ExcelIcon
+    },
+     {
+      type: "pdf",
+      icon: PdfIcon
+    },
+     {
+      type: "word",
+      icon: WordIcon
+    },
+     {
+      type: "video",
+      icon: VideoIcon
+    },
+     {
+      type: "image",
+      icon: ImageIcon
+    }
+    ],
     popupTitle: "Visuals",
     itemsPerPage: 18,
     startingPage: 1,

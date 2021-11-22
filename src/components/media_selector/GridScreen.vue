@@ -15,9 +15,11 @@
       :key="item.id"
         class="gridScreenImage"
       :class="{selectedItem: isItemSelected(item.id)}"
-      :style="{ backgroundImage: 'url(' + item.public_url + ')' }"
       @click="selectItemHandler(item)"
-      ></div>
+      >
+      <img :src="item.public_url??getIcon(item)" :alt="item.name" width="150" height="90">
+      <p>{{item.name}}</p>
+      </div>
     </div>
     <h2 v-else class="emptyData">No data found!</h2>
   </div>
@@ -26,6 +28,7 @@
 <script>
 
 import _ from 'lodash';
+import NoImageIcon from '../../assets/icons/no-image-6663.svg';
 
 export default {
     name: "GridScreen",
@@ -59,6 +62,7 @@ export default {
     data(){
         return{
             selectAllFieldValue: false,
+            defualtImageIcon: "/assets/icons8-no-image-100.png",
         }
     },
     methods: {
@@ -87,6 +91,11 @@ export default {
           })
         }
          this.currentlySelectedHandler(clonedArray)
+      },
+      getIcon(item){
+        const index = this.iconMappings.findIndex(iconObject => item.mime_type.indexOf(iconObject.type) > -1 );
+        if(index > -1) return this.iconMappings[index].icon;
+        return NoImageIcon;
       }
     },
    async mounted() {
@@ -133,10 +142,14 @@ export default {
         background-position: center;
         border-radius: 5px;
         cursor: pointer;
+        color: #fff;
+        text-align: center;
       }
 
+
+
       .selectedItem {
-        border: 2px solid #fff;
+        border: 4px solid #fcb13b;
       }
 
       .activeCurrentView {

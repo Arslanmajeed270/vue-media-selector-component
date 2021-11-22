@@ -78,7 +78,11 @@
       </div>
     </div>
 
-    <div class="gsLibraryContainer">
+    <div class="gsLibraryContainer"
+      @drop="onDropRemoveSelected($event)"
+      @dragenter.prevent
+      @dragover.prevent>
+    >
       <div class="gridScreenFilterSection">
         <p class="gsTitle">Library</p>
         <label v-if="selectAllCheckbox" class="checkboxContainer">
@@ -120,21 +124,33 @@
 
 
       <div class="gsSelectedContainer"
-       @drop="onDrop($event)"
-                @dragenter.prevent
-                @dragover.prevent>
+       @drop="onDrop($event, idx)"
+        @dragenter.prevent
+        @dragover.prevent
+        >
             <p class="gsTitle">Selected</p>
-            <div class="gs_section">
-              <ul class="gs_ulmenu">
-                <li 
-                v-for="item in getCurrentSelected()" 
-                :key="item.id" class="gs_litext"               
-                >
-                  <p class="gs_para">{{item.name}}</p>
-                  <div class="liBorder"></div>
-                </li>
-              </ul>
-            </div>
+    <my-component  
+      v-for="(item, idx) in getCurrentSelected()"
+      :key="item.id"
+       @drop="onDrop($event, idx)"
+        @dragenter.prevent
+        @dragover.prevent
+      >
+
+      <div 
+      class="liFilterCategories gs_lib"
+      :class="{'dx-draggable-dragging': isDragStarted}"
+      draggable="true"
+      @dragstart="startDrag($event, item)"
+      @dragleave="isDragStarted = false"
+      >
+      <div>
+        <p class="checkboxTitleSelcted"  @click="onItemChangeHandler(item)"> 
+          {{idx+1}}
+          {{item.name}}</p>
+      </div>
+      </div>
+      </my-component>
           </div>
 
 
@@ -293,13 +309,31 @@ export default {
         evt.dataTransfer.effectAllowed = 'move'
         evt.dataTransfer.setData('itemID', item.id)
       },
-      onDrop (evt) {
-        const itemID = evt.dataTransfer.getData('itemID')
-        const item = this.getItems().find(item => item.id === Number(itemID))
+      onDrop (evt, idx) {
+        const itemID = evt.dataTransfer.getData('itemID');
+        if(idx){
+          evt.stopPropagation();
+          const clonedArray = _.cloneDeep(this.currentlySelectedCache);
+          let item = this.getItems().find(item => item.id === Number(itemID));
+          if(!item){
+          item = clonedArray.find(item => item.id === Number(itemID));
+          }
+          clonedArray.splice(idx, 0, item);
+          const updatedSelectedArray = clonedArray.filter((item, index) => index === idx || item.id !== Number(itemID))
+          this.currentlySelectedHandler(updatedSelectedArray)
+        }else{
+          const item = this.getItems().find(item => item.id === Number(itemID))
         const clonedArray = _.cloneDeep(this.currentlySelectedCache);
          Array.prototype.push.apply(clonedArray, this.markedItems);
          clonedArray.push({...item})
          this.currentlySelectedHandler(clonedArray)
+        }
+      },
+      onDropRemoveSelected (evt) {
+        const itemID = evt.dataTransfer.getData('itemID')
+        const clonedArray = _.cloneDeep(this.currentlySelectedCache);
+        const updatedSelectedArray = clonedArray.filter(item => item.id !== Number(itemID))
+         this.currentlySelectedHandler(updatedSelectedArray)
       }
     },
     async mounted() {
@@ -473,6 +507,12 @@ export default {
       .checkboxTitle {
         margin: 0px;
         cursor: pointer;
+      }
+
+      .checkboxTitleSelcted {
+        margin: 0px;
+        cursor: pointer;
+        margin-left: 0% !important;
       }
 
       /* ################## */

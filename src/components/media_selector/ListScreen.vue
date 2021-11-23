@@ -124,7 +124,7 @@
 
 
       <div class="gsSelectedContainer"
-       @drop="onDrop($event, idx)"
+       @drop="onDrop($event)"
         @dragenter.prevent
         @dragover.prevent
         >
@@ -135,6 +135,7 @@
        @drop="onDrop($event, idx)"
         @dragenter.prevent
         @dragover.prevent
+        class="selectedZIndex"
       >
 
       <div 
@@ -159,6 +160,7 @@
 
 <script>
 import AlphabtsArray from '../../data/alphabets.json';
+import {array_move} from '../../utils'
 import _ from 'lodash';
 
 export default {
@@ -273,7 +275,7 @@ export default {
        getItems(){
         const result = [];
         this.itemsObjects?.data?.map(item => {
-          const index = this.currentlySelectedCache.findIndex(_item => _item.id === item.id)
+          const index = this.currentlySelectedCache?.findIndex(_item => _item.id === item.id)
           if( index === -1 ) result.push({...item})
           return item
         })
@@ -310,24 +312,25 @@ export default {
         evt.dataTransfer.setData('itemID', item.id)
       },
       onDrop (evt, idx) {
+        evt.stopPropagation();
         const itemID = evt.dataTransfer.getData('itemID');
-        if(idx){
-          evt.stopPropagation();
-          const clonedArray = _.cloneDeep(this.currentlySelectedCache);
-          let item = this.getItems().find(item => item.id === Number(itemID));
-          if(!item){
-          item = clonedArray.find(item => item.id === Number(itemID));
-          }
-          clonedArray.splice(idx, 0, item);
-          const updatedSelectedArray = clonedArray.filter((item, index) => index === idx || item.id !== Number(itemID))
-          this.currentlySelectedHandler(updatedSelectedArray)
-        }else{
-          const item = this.getItems().find(item => item.id === Number(itemID))
         const clonedArray = _.cloneDeep(this.currentlySelectedCache);
-         Array.prototype.push.apply(clonedArray, this.markedItems);
-         clonedArray.push({...item})
-         this.currentlySelectedHandler(clonedArray)
+        let item = this.getItems().find(item => item.id === Number(itemID))
+        if(!idx && !item ) return
+        if(!idx) {
+          Array.prototype.push.apply(clonedArray, this.markedItems);
+          clonedArray.push({...item})
+          this.currentlySelectedHandler(clonedArray)
+          return
         }
+        const index = clonedArray.findIndex(item => item.id === Number(itemID));
+        if(index === -1) {
+          const updatedSelectedArray = clonedArray.splice(idx, 0, item);
+          this.currentlySelectedHandler(updatedSelectedArray);
+          return
+        }
+        const updatedSelectedArray =  array_move(clonedArray, index, idx);
+        this.currentlySelectedHandler(updatedSelectedArray)
       },
       onDropRemoveSelected (evt) {
         const itemID = evt.dataTransfer.getData('itemID')
@@ -355,6 +358,10 @@ export default {
 
 
 <style scoped>
+
+.selectedZIndex {
+  z-index: 1;
+}
 
 .gridScreenBodyContainer {
         width: 92%;

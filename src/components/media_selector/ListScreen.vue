@@ -1,5 +1,6 @@
 <template>
- <div class="gridScreenBodyContainer">
+      <div class="gridScreenBody">
+    <div class="gridScreenBodyContainer">
 
     <div  class="gsfilterContainer">
       <div v-show="filtersVisible" class="gsContentContainer">
@@ -79,6 +80,7 @@
     </div>
 
     <div class="gsLibraryContainer"
+    id="scrollComponent"
       @drop="onDropRemoveSelected($event)"
       @dragenter.prevent
       @dragover.prevent>
@@ -158,6 +160,8 @@
 
 
     </div>
+      </div>
+
 </template>
 
 <script>
@@ -195,7 +199,8 @@ export default {
       "currentlySelectedHandler",
       "currentlySelectedCache",
       "changeCurrentViewHandler",
-      "changeFilterHandler"
+      "changeFilterHandler",
+      "loadMoreItems"
     ],
     data(){
       return {
@@ -353,6 +358,14 @@ export default {
       }
     },
     async mounted() {
+      const scrollDiv = document.querySelector('#scrollComponent');
+       // eslint-disable-next-line no-unused-vars
+       scrollDiv.addEventListener('scroll', e => {
+         const totalScroll = Math.round(scrollDiv.scrollTop + scrollDiv.clientHeight); 
+      if( totalScroll >= scrollDiv.scrollHeight) {
+        this.loadMoreItems();
+      }
+    });
       await this.loadData()
       this.AlphabtsArrayData = AlphabtsArray
        this.getCategoryFilterData()?.values.map(_category => {
@@ -371,6 +384,11 @@ export default {
 
 
 <style scoped>
+.gridScreenBody {
+  height: auto;
+  max-height: 78%;
+  min-height: 78%;
+    }
 .emptyData {
     color: #fff;
   }
@@ -389,17 +407,18 @@ export default {
         display: grid;
         grid-template-areas: "filter filter library library library divider selected selected selected";
         grid-gap: 2em;
+        grid-template-rows: 510px 100%;
       }
 
   .selectedLine {
     width: 3px;
     background-color: #FCB13B;
-    height: 45%;
+    height: 43%;
     margin: auto;
   }
   .assing_to_right {
     color: #FCB13B;
-    margin: 20px auto;
+    margin: 10px auto;
     font-size: 50px;
     cursor: pointer;
   }
@@ -411,6 +430,8 @@ export default {
 
       .gsfilterContainer {
         grid-area: filter;
+        max-height: 100%;
+        overflow: auto;
       }
       .gsTitle {
         margin: 0px;
@@ -421,10 +442,14 @@ export default {
       }
       .gsLibraryContainer {
         grid-area: library;
+        max-height: 100%;
+        overflow: auto;
       }
 
       .gsSelectedContainer {
         grid-area: selected;
+        max-height: 100%;
+        overflow: auto;
       }
 
       .gsContentContainer {
@@ -622,5 +647,25 @@ export default {
       .activeCurrentView {
         color: #fcb13b !important;
       }
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #575757; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
+}
 </style>

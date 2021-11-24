@@ -1,28 +1,30 @@
 <template>
-  <div class="gridScreenBodyContainer">
-    <div class="gridScreenFilterSection" >
-      <label v-if="selectAllCheckbox" class="checkboxContainer">
-        <input type="checkbox"  @change="selectAllHandler" v-model="selectAllFieldValue"/>
-        <span class="checkmark"></span>
-      </label>
-      <i v-if="filter" class="fas fa-filter" @click="changeCurrentViewHandler('list')"></i>
-      <i v-if="thumbnailView" class="fas fa-th activeCurrentView"></i>
-      <i v-if="listView" class="fas fa-list" @click="changeCurrentViewHandler('list')"></i>
-    </div>
-    <div v-if="itemsObjects?.data?.length"  id="scrollComponent" class="gridScreenImageSection">
-      <div
-      v-for="item in itemsObjects?.data"
-      :key="item.id"
-        class="gridScreenImage"
-      :class="{selectedItem: isItemSelected(item.id)}"
-      @click="selectItemHandler(item)"
-      >
-      <img :src="item.public_url??getIcon(item)" :alt="item.name" width="150" height="90">
-      <p>{{item.name}}</p>
+      <div class="gridScreenBody" id="scrollComponent">
+        <div class="gridScreenBodyContainer">
+          <div class="gridScreenFilterSection" >
+            <label v-if="selectAllCheckbox" class="checkboxContainer">
+              <input type="checkbox"  @change="selectAllHandler" v-model="selectAllFieldValue"/>
+              <span class="checkmark"></span>
+            </label>
+            <i v-if="filter" class="fas fa-filter" @click="changeCurrentViewHandler('list')"></i>
+            <i v-if="thumbnailView" class="fas fa-th activeCurrentView"></i>
+            <i v-if="listView" class="fas fa-list" @click="changeCurrentViewHandler('list')"></i>
+          </div>
+          <div v-if="itemsObjects?.data?.length"  id="scrollComponent" class="gridScreenImageSection">
+            <div
+            v-for="item in itemsObjects?.data"
+            :key="item.id"
+              class="gridScreenImage"
+            :class="{selectedItem: isItemSelected(item.id)}"
+            @click="selectItemHandler(item)"
+            >
+            <img :src="item.public_url??getIcon(item)" :alt="item.name" width="150" height="90">
+            <p>{{item.name}}</p>
+            </div>
+          </div>
+          <h2 v-else class="emptyData">No data found!</h2>
+        </div>
       </div>
-    </div>
-    <h2 v-else class="emptyData">No data found!</h2>
-  </div>
 </template>
 
 <script>
@@ -57,7 +59,8 @@ export default {
       "itemsObjects",
       "currentlySelectedHandler",
       "currentlySelectedCache",
-      "changeCurrentViewHandler"
+      "changeCurrentViewHandler",
+      "loadMoreItems"
     ],
     data(){
         return{
@@ -104,6 +107,14 @@ export default {
       }
   },
    async mounted() {
+      const scrollDiv = document.querySelector('#scrollComponent');
+       // eslint-disable-next-line no-unused-vars
+       scrollDiv.addEventListener('scroll', e => {
+         const totalScroll = Math.round(scrollDiv.scrollTop + scrollDiv.clientHeight); 
+      if( totalScroll >= scrollDiv.scrollHeight) {
+        this.loadMoreItems();
+      }
+    });
      await this.loadData();
   },
   unmounted(){
@@ -113,6 +124,13 @@ export default {
 </script>
 
 <style scoped>
+
+.gridScreenBody {
+        height: auto;
+      max-height: 78%;
+      min-height: 78%;
+      overflow-y: auto;
+    }
   .emptyData {
     color: #fff;
   }
@@ -230,6 +248,28 @@ export default {
       }
 
       /* end checkbox */
+
+      /* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #575757; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
+}
 
 </style>
 

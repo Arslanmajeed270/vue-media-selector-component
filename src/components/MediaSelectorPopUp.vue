@@ -33,7 +33,6 @@
           </div>
         </div>
       </div>
-      <div class="gridScreenBody" id="scrollComponent">
 
           <!-- ******  Start body section ***** -->
           <template v-if="showModal && currentView === 'grid'">
@@ -62,6 +61,7 @@
             :currentlySelectedCache="currentlySelectedCache"
             :currentlySelectedHandler="currentlySelectedHandler"
             :changeCurrentViewHandler="changeCurrentViewHandler"
+            :loadMoreItems="loadMoreItems"
             />
       </template>
        <template v-if="showModal && currentView === 'list'">
@@ -92,10 +92,9 @@
         :currentlySelectedHandler="currentlySelectedHandler"
         :changeCurrentViewHandler="changeCurrentViewHandler"
         :changeFilterHandler="changeFilterHandler"
+        :loadMoreItems="loadMoreItems"
         />
       </template>
-
-      </div>
       <div class="gridScreenFooter">
         <button class="cancelButton" @click="closeModal">Cancel</button>
         <button class="saveButton" @click="onSaveHandler(currentlySelectedCache)">Use</button>
@@ -220,14 +219,6 @@ export default {
     ListScreen
   },
   mounted(){
-     const scrollDiv = document.querySelector('#scrollComponent');
-       // eslint-disable-next-line no-unused-vars
-       scrollDiv.addEventListener('scroll', e => {
-         const totalScroll = Math.round(scrollDiv.scrollTop + scrollDiv.clientHeight); 
-      if( totalScroll >= scrollDiv.scrollHeight) {
-        this.loadMoreItems();
-      }
-    });
     if(this.currentlySelected?.length){
       const clonedCurrentlySelected = _.cloneDeep(this.currentlySelected);
       if( !this.allowMultiple ) {
@@ -364,12 +355,6 @@ export default {
         background: #9d9d9c;
       }
 
-.gridScreenBody {
-        height: auto;
-      max-height: 78%;
-      min-height: 78%;
-      overflow-y: auto;
-    }
       .gridScreenFooter {
         height: 8%;
         border-top: 3px solid #7e7e7e;

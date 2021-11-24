@@ -28,15 +28,15 @@
             </select>
           </div>
           <div  v-show="searchBox" class="selectWrapper">
-            <input type="text" name="searchFieldValue" @change="onKeyup"  class="selectBox" />
+            <input type="text" name="searchFieldValue" @keypress="onKeyup"  class="selectBox" />
             <img src="../assets/search-solid.svg" width="15" />
           </div>
         </div>
       </div>
-      <div class="gridScreenBody">
+      <div class="gridScreenBody" id="scrollComponent">
 
           <!-- ******  Start body section ***** -->
-          <my-component v-if="showModal && currentView === 'grid'">
+          <template v-if="showModal && currentView === 'grid'">
             <GridScreen 
             :closeModal="closeModal" 
             :allowMultiple="allowMultiple"
@@ -63,8 +63,8 @@
             :currentlySelectedHandler="currentlySelectedHandler"
             :changeCurrentViewHandler="changeCurrentViewHandler"
             />
-      </my-component>
-       <my-component v-if="showModal && currentView === 'list'">
+      </template>
+       <template v-if="showModal && currentView === 'list'">
         <ListScreen 
         :closeModal="closeModal" 
         :filtersVisible="filtersVisible" 
@@ -93,7 +93,7 @@
         :changeCurrentViewHandler="changeCurrentViewHandler"
         :changeFilterHandler="changeFilterHandler"
         />
-      </my-component>
+      </template>
 
       </div>
       <div class="gridScreenFooter">
@@ -155,7 +155,8 @@ export default {
       orderFieldValue: "",
       searchFieldValue:"",
       currentlySelectedCache: [],
-      timeout: null
+      timeout: null,
+      loading: false
     }
   },
   methods: {
@@ -188,18 +189,53 @@ export default {
          this.onChangeHandler(e)
       }, 200);
     },
-    currentlySelectedHandler(updatedObject, defualt){
-      if(defualt) this.currentlySelectedCache = _.cloneDeep(this.currentlySelected);
+    currentlySelectedHandler(updatedObject, isDefault){
+      const clonedCurrentlySelected = _.cloneDeep(this.currentlySelected);
+       if( isDefault && !this.allowMultiple ) {
+        this.currentlySelectedCache.push(clonedCurrentlySelected[0])
+      }else if(isDefault) this.currentlySelectedCache = clonedCurrentlySelected
       else this.currentlySelectedCache = updatedObject
+    },
+    loaded(){
+      setTimeout(() => {
+        this.loading = false
+      }, 2000);
+    },
+   async loadMoreItems(){
+    if( this.loading || !this.itemsObjects || !this.itemsObjects.next_page_url) return;
+    this.loading = true
+    const itemResult = await getItemData(this.itemsObjects?.next_page_url+`&orderDirection=${this.orderDirectionValue}&orderField=${this.orderFieldValue}&searchBox=${this.searchFieldValue}`);
+    if( itemResult === "No result found!" )  return this.loaded()
+    if( itemResult.data.length + this.itemsObjects.data.length > itemResult.per_page  ) {
+      this.itemsObjects =  itemResult
+      return this.loaded()
     }
+    itemResult.data = [...itemResult.data, ...this.itemsObjects.data];
+    this.itemsObjects =  itemResult
+    this.loaded()
+    },
   },
   components: {
     GridScreen,
     ListScreen
   },
   mounted(){
-    if(this.currentlySelected?.length)
-    this.currentlySelectedCache = _.cloneDeep(this.currentlySelected);
+     const scrollDiv = document.querySelector('#scrollComponent');
+       // eslint-disable-next-line no-unused-vars
+       scrollDiv.addEventListener('scroll', e => {
+         const totalScroll = Math.round(scrollDiv.scrollTop + scrollDiv.clientHeight); 
+      if( totalScroll >= scrollDiv.scrollHeight) {
+        this.loadMoreItems();
+      }
+    });
+    if(this.currentlySelected?.length){
+      const clonedCurrentlySelected = _.cloneDeep(this.currentlySelected);
+      if( !this.allowMultiple ) {
+        this.currentlySelectedCache.push(clonedCurrentlySelected[0])
+      }else{
+        this.currentlySelectedCache = _.cloneDeep(this.currentlySelected);
+      }
+    }
   }
 }
 </script>

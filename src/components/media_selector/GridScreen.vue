@@ -1,6 +1,6 @@
 <template>
   <div class="gridScreenBodyContainer">
-    <div class="gridScreenFilterSection">
+    <div class="gridScreenFilterSection" >
       <label v-if="selectAllCheckbox" class="checkboxContainer">
         <input type="checkbox"  @change="selectAllHandler" v-model="selectAllFieldValue"/>
         <span class="checkmark"></span>
@@ -9,7 +9,7 @@
       <i v-if="thumbnailView" class="fas fa-th activeCurrentView"></i>
       <i v-if="listView" class="fas fa-list" @click="changeCurrentViewHandler('list')"></i>
     </div>
-    <div  v-if="itemsObjects?.data?.length" class="gridScreenImageSection">
+    <div v-if="itemsObjects?.data?.length"  id="scrollComponent" class="gridScreenImageSection">
       <div
       v-for="item in itemsObjects?.data"
       :key="item.id"
@@ -67,6 +67,7 @@ export default {
     },
     methods: {
       selectAllHandler(){
+        if( !this.allowMultiple ) return
         if(!this.selectAllFieldValue){
           this.currentlySelectedHandler([])
           }else{
@@ -81,6 +82,10 @@ export default {
       },
       selectItemHandler(itemProps){
          let clonedArray = _.cloneDeep(this.currentlySelectedCache);
+         if(!this.allowMultiple){
+          this.currentlySelectedHandler([itemProps]);
+          return
+         }
         const index = clonedArray.findIndex(item => item.id === itemProps.id)
         if(index > -1){
            clonedArray.splice(index, 1)
@@ -97,9 +102,9 @@ export default {
         if(index > -1) return this.iconMappings[index].icon;
         return NoImageIcon;
       }
-    },
+  },
    async mounted() {
-     await this.loadData()
+     await this.loadData();
   },
   unmounted(){
     this.currentlySelectedHandler([], true)

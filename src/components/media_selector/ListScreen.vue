@@ -82,7 +82,6 @@
       @drop="onDropRemoveSelected($event)"
       @dragenter.prevent
       @dragover.prevent>
-    >
       <div class="gridScreenFilterSection">
         <p class="gsTitle">Library</p>
         <label v-if="selectAllCheckbox" class="checkboxContainer">
@@ -94,16 +93,17 @@
         <i v-if="listView" class="fas fa-list activeCurrentView"></i>
       </div>
 
-      <my-component  
+      <template 
+       v-if="itemsObjects?.data?.length"
+      >
+    <div
       v-for="item in getItems()"
-      :key="item.id">
-
-      <div 
+      :key="item.id"
       class="liFilterCategories gs_lib"
-      :class="{'dx-draggable-dragging': isDragStarted}"
+      :class="{'dx-draggable-dragging': isDragStarted === item.id}"
       draggable="true"
       @dragstart="startDrag($event, item)"
-      @dragleave="isDragStarted = false"
+      @dragleave="dragleave()"
       >
       <div>
          <label class="checkboxContainer">
@@ -113,7 +113,8 @@
         <p class="checkboxTitle" @click="onItemChangeHandler(item)">{{item.name}}</p>
       </div>
       </div>
-      </my-component>
+      </template>
+      <h2 v-else class="emptyData">No data found!</h2>
     </div>
 
       <div class="selectItemLineSection">
@@ -128,22 +129,23 @@
         @dragenter.prevent
         @dragover.prevent
         >
-            <p class="gsTitle">Selected</p>
-    <my-component  
+      <p class="gsTitle">Selected</p>
+    <template  
       v-for="(item, idx) in getCurrentSelected()"
       :key="item.id"
-       @drop="onDrop($event, idx)"
-        @dragenter.prevent
-        @dragover.prevent
-        class="selectedZIndex"
+      @dragenter.prevent
+      @dragover.prevent
+      class="selectedZIndex"
       >
-
       <div 
       class="liFilterCategories gs_lib"
-      :class="{'dx-draggable-dragging': isDragStarted}"
+      :class="{'dx-draggable-dragging': isDragStarted === item.id, 'isDragOver': dragOverIndex === idx}"
       draggable="true"
       @dragstart="startDrag($event, item)"
-      @dragleave="isDragStarted = false"
+      @dragleave="dragleave()"
+      @dragover="ondragover($event, idx)"
+      @dragenter.prevent
+      @drop="onDrop($event, idx)"
       >
       <div>
         <p class="checkboxTitleSelcted"  @click="onItemChangeHandler(item)"> 
@@ -151,7 +153,7 @@
           {{item.name}}</p>
       </div>
       </div>
-      </my-component>
+      </template>
           </div>
 
 
@@ -205,7 +207,8 @@ export default {
         timeout: null,
         markedItems: [],
         selectAllFieldValue: false,
-        isDragStarted: false
+        isDragStarted: "",
+        dragOverIndex: ''
       }
     },
     methods: {
@@ -306,18 +309,19 @@ export default {
         return this.currentlySelectedCache
       },
       startDrag (evt, item) {
-        this.isDragStarted = true
+        this.isDragStarted = item.id
         evt.dataTransfer.dropEffect = 'move'
         evt.dataTransfer.effectAllowed = 'move'
         evt.dataTransfer.setData('itemID', item.id)
       },
       onDrop (evt, idx) {
         evt.stopPropagation();
+        this.dragOverIndex = "";
         const itemID = evt.dataTransfer.getData('itemID');
         const clonedArray = _.cloneDeep(this.currentlySelectedCache);
         let item = this.getItems().find(item => item.id === Number(itemID))
-        if(!idx && !item ) return
-        if(!idx) {
+        if(idx === undefined && !item ) return
+        if(idx === undefined) {
           Array.prototype.push.apply(clonedArray, this.markedItems);
           clonedArray.push({...item})
           this.currentlySelectedHandler(clonedArray)
@@ -325,8 +329,8 @@ export default {
         }
         const index = clonedArray.findIndex(item => item.id === Number(itemID));
         if(index === -1) {
-          const updatedSelectedArray = clonedArray.splice(idx, 0, item);
-          this.currentlySelectedHandler(updatedSelectedArray);
+          clonedArray.splice(idx, 0, item);
+          this.currentlySelectedHandler(clonedArray);
           return
         }
         const updatedSelectedArray =  array_move(clonedArray, index, idx);
@@ -337,6 +341,15 @@ export default {
         const clonedArray = _.cloneDeep(this.currentlySelectedCache);
         const updatedSelectedArray = clonedArray.filter(item => item.id !== Number(itemID))
          this.currentlySelectedHandler(updatedSelectedArray)
+      },
+      ondragover(evt, idx){
+        evt.preventDefault();
+        this.dragOverIndex = idx
+
+      },
+      dragleave(){
+        this.isDragStarted = ""
+        this.dragOverIndex = ""
       }
     },
     async mounted() {
@@ -358,6 +371,12 @@ export default {
 
 
 <style scoped>
+.emptyData {
+    color: #fff;
+  }
+.isDragOver {
+  background-color: lightblue;
+}
 
 .selectedZIndex {
   z-index: 1;

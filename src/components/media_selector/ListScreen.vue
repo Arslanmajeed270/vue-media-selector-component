@@ -1,200 +1,98 @@
 <template>
-      <div class="gridScreenBody">
-    <div class="gridScreenBodyContainer">
-
-    <div  class="gsfilterContainer">
-      <div v-show="filtersVisible" class="gsContentContainer">
-        <p class="gsTitle">Filter</p>
-        <div class="gsfilterCategory">
-          <p class="gsfilterTitle">Category</p>
-          <p class="gsfilterClear" @click="clearData('categories')">Clear</p>
-        </div>
-        <div class="liFilterCategories"
-         v-for="singleFilter in getCategoryFilterData()?.values"
-        :key="singleFilter.key"
-        >
-          <label class="checkboxContainer">
-            <input type="checkbox" :id="singleFilter.key" @change="onCategoryHandler(singleFilter)" :checked="isCatetgorySelected(singleFilter.key)" />
-            <span class="checkmark"></span>
-          </label>
-          <p class="checkboxTitle" @click="onCategoryHandler(singleFilter)" >{{singleFilter.value}}</p>
-        </div>        
-  
-        <br />
-        <div class="Checkbox-showless">
-          <p>Showless</p>
-        </div>
-        <div>
-          <div class="gsfilterCategory">
-            <p class="gsfilterTitle">Title</p>
-            <p class="gsfilterClear" @click="clearData('title')">Clear</p>
-          </div>
-          <div class="alphabetsFilter" >
-            <table>
-            <tbody>
-                <tr  
-                 v-for="(abcArr, index) in AlphabtsArrayData"
-                :key="index"
-                >
-                  <td
-                    v-for="(abc, idx) in abcArr"
-                    :key="idx"
-                    :class="{
-                      selectedAphabets: title.indexOf(abc) > -1
-                    }"
-                    @click="alphabetsChangeHanlder(abc)"
-                  >
-                  {{abc}}
-                  </td>
-                </tr>
-            </tbody>
-          </table>
-          </div>
-        </div>
-        <div class="gsfilterCategory">
-          <p class="gsfilterTitle">Last updated</p>
-          <p class="gsfilterClear" @click="clearData('lastUpdated')">Clear</p>
-        </div>
-        <div class="Checkbox-showless">
-        <form>
-          <table cellspacing="10">
-            <tr>
-              <th><label for="fromInput">From</label></th>
-              <td>
-                <input type="text" @change="onKeyup" v-model="fromInput" name="fromInput" >
-              </td>
-            </tr>
-            <tr>
-              <th>
-                <label for="toInput">To</label>
-              </th>
-              <td>
-              <input type="text" @change="onKeyup" v-model="toInput" name="toInput">
-              </td>
-            </tr>
-          </table>
-
-          </form>
-        </div>
+  <div class="col-left">
+    <div class="checkbox-list">
+      <div class="top-left">
+        <ul>
+           <li class="library">Library</li>
+          <li v-if="selectAllCheckbox"><a class="btn btn-transparent">
+            <label v-if="selectAllCheckbox" class="checkboxContainer">
+              <input type="checkbox"  @change="selectAllHandler" v-model="selectAllFieldValue"/>
+              <span class="checkmark"></span>
+            </label>
+          </a></li>
+          <li v-if="filter" ><a class="btn"><i :class="{activeCurrentView: filtersVisible}" @click="changeFilterHandler()" class="fa fa-filter " aria-hidden="true"></i></a></li>
+          <li v-if="thumbnailView" ><a class="btn"><i class="fa fa-th" aria-hidden="true" @click="changeCurrentViewHandler('grid')"></i></a></li>
+          <li v-if="listView" ><a class="btn"><i @click="changeCurrentViewHandler('list')" class="fa fa-bars activeCurrentView" aria-hidden="true"></i></a></li>
+        </ul>
       </div>
-    </div>
-
-    <div class="gsLibraryContainer"
-    id="scrollComponent"
-      @drop="onDropRemoveSelected($event)"
-      @dragenter.prevent
-      @dragover.prevent>
-      <div class="gridScreenFilterSection">
-        <p class="gsTitle">Library</p>
-        <label v-if="selectAllCheckbox" class="checkboxContainer">
-          <input type="checkbox" @change="selectAllHandler" v-model="selectAllFieldValue" />
-          <span class="checkmark"></span>
-        </label>
-        <i v-if="filter" class="fas fa-filter" :class="{activeCurrentView: filtersVisible}" @click="changeFilterHandler"></i>
-        <i v-if="thumbnailView" class="fas fa-th" @click="changeCurrentViewHandler('grid')"></i>
-        <i v-if="listView" class="fas fa-list activeCurrentView"></i>
-      </div>
-
-      <template 
-       v-if="itemsObjects?.data?.length"
-      >
-    <div
-      v-for="item in getItems()"
-      :key="item.id"
-      class="liFilterCategories gs_lib"
-      :class="{'dx-draggable-dragging': isDragStarted === item.id}"
-      draggable="true"
-      @dragstart="startDrag($event, item)"
-      @dragleave="dragleave()"
-      >
-      <div>
-         <label class="checkboxContainer">
-          <input type="checkbox" @change="onItemChangeHandler(item)" :checked="isItemMarked(item.id)"/>
-          <span class="checkmark"></span>
-        </label>
-        <p class="checkboxTitle" @click="onItemChangeHandler(item)">{{item.name}}</p>
-      </div>
-      </div>
-      </template>
-      <h2 v-else class="emptyData">No data found!</h2>
-    </div>
-
-      <div class="selectItemLineSection">
-        <div class="selectedLine"></div>
-        <i class="fas fa-caret-right assing_to_right" @click="selectItemHandler"></i>
-        <div class="selectedLine"></div>
-      </div>
-
-
-      <div class="gsSelectedContainer"
-       @drop="onDrop($event)"
+      <form class="check-form" action="/action_page.php">
+        <div 
+        class="left-check" 
+        id="scrollComponent"
+        @drop="onDropRemoveSelected($event)"
         @dragenter.prevent
         @dragover.prevent
         >
-      <p class="gsTitle">Selected</p>
-    <template  
-      v-for="(item, idx) in getCurrentSelected()"
-      :key="item.id"
-      @dragenter.prevent
-      @dragover.prevent
-      class="selectedZIndex"
-      >
-      <div 
-      class="liFilterCategories gs_lib"
-      :class="{'dx-draggable-dragging': isDragStarted === item.id, 'isDragOver': dragOverIndex === idx}"
-      draggable="true"
-      @dragstart="startDrag($event, item)"
-      @dragleave="dragleave()"
-      @dragover="ondragover($event, idx)"
-      @dragenter.prevent
-      @drop="onDrop($event, idx)"
-      >
-      <div>
-        <p class="checkboxTitleSelcted"  @click="onItemChangeHandler(item)"> 
-          {{idx+1}}
-          {{item.name}}</p>
-      </div>
-      </div>
-      </template>
-          </div>
-
-
+          <ul v-if="itemsObjects?.data?.length">
+            <li 
+            v-for="item in getItems()"
+            :key="item.id"
+            :class="{'dx-draggable-dragging': isDragStarted === item.id}"
+             draggable="true"
+            @dragstart="startDrag($event, item)"
+            @dragleave="dragleave()"
+            >
+            <label class="checkboxContainer" style="padding-left: 30px;">
+              <input type="checkbox" @change="onItemChangeHandler(item)" :checked="isItemMarked(item.id)"/>
+              <span class="checkmark"></span>
+              {{item.name}}
+            </label>
+            </li>
+          </ul>
+           <h2 v-else class="emptyData">No data found!</h2>
+        </div>
+      </form>
     </div>
+  </div>
+  <div class="middle-line">
+    <div class="line"></div>
+    <div class="wordwrapper">
+      <i class="fa fa-2x fa-play" @click="selectItemHandler" style="cursor: pointer;" aria-hidden="true"></i>
+    </div>
+  </div>
+  <div class="col-right"
+   @drop="onDrop($event)"
+  @dragenter.prevent
+  @dragover.prevent
+  >
+    <div>
+      <div class="top-right">
+        <p>Selected</p>
       </div>
-
+      <ol>
+        <li
+        v-for="(item, idx) in getCurrentSelected()"
+        :key="item.id"
+        class="selectedZIndex"
+        :class="{'dx-draggable-dragging': isDragStarted === item.id, 'isDragOver': dragOverIndex === idx}"
+        draggable="true"
+        @dragstart="startDrag($event, item)"
+        @dragleave="dragleave()"
+        @dragover="ondragover($event, idx)"
+        @dragenter.prevent
+        @drop="onDrop($event, idx)"
+        > {{item.name}}</li>
+      </ol>
+    </div>
+  </div>
 </template>
 
 <script>
-import AlphabtsArray from '../../data/alphabets.json';
 import {array_move} from '../../utils'
 import _ from 'lodash';
 
 export default {
     name: "ListView",
     props: [
-      "closeModal",
-      "currentView",
       "filtersVisible",
       "allowMultiple",
-      "currentlySelected",
-      "popupTitle",
-      "itemsPerPage",
-      "startingPage",
-      "okButtonText",
-      "cancelButtonText",
-
       // Items Hidden
-      "orderDirection",
-      "orderField",
-      "searchBox",
       "selectAllCheckbox",
       "filter",
       "listView",
       "thumbnailView",
 
       "loadData",
-      "filterObjects",
-      "loadDataFilteredData",
       "itemsObjects",
       "currentlySelectedHandler",
       "currentlySelectedCache",
@@ -204,12 +102,6 @@ export default {
     ],
     data(){
       return {
-        AlphabtsArrayData: [],
-        fromInput: "",
-        toInput: "",
-        categories: [],
-        title: "",
-        timeout: null,
         markedItems: [],
         selectAllFieldValue: false,
         isDragStarted: "",
@@ -217,64 +109,6 @@ export default {
       }
     },
     methods: {
-      getCategoryFilterData(){
-        if( this.filterObjects?.filters ) {
-          const category_filters = this.filterObjects?.filters.filter( item => item.key === "category" )
-          return category_filters[0];
-        }
-        return []
-      },
-      isCatetgorySelected(id){
-        const index = this.categories.findIndex(elem => elem.key === id)
-        if(index > -1) return true
-        else return false
-      },
-      getFilterExtension(){
-        const categoriesString = this.categories.map(_category => _category.key);
-        return `/?category=${categoriesString.toString()}&title=${this.title}&from=${this.fromInput}&to=${this.toInput}"`
-      },
-      onChangeHandler(e){
-        const { name , value } = e.target;
-        this[name] = value;
-        const extension = this.getFilterExtension();
-        this.loadDataFilteredData(extension);
-      },
-    async onCategoryHandler(_category){
-         const index = this.categories.findIndex(elem => elem.key === _category.key)
-        if(index > -1){
-          this.categories.splice(index, 1)
-        }else{
-          this.categories.push({
-            ..._category
-          })
-        }
-        const extension = this.getFilterExtension();
-        this.loadDataFilteredData(extension);
-      },
-      onKeyup(e){
-       clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          this.onChangeHandler(e)
-        }, 200);
-      },
-      alphabetsChangeHanlder(_alphabet){
-        const index = this.title.indexOf(_alphabet)
-        if(index < 0) {
-          this.title += _alphabet
-          const extension = this.getFilterExtension();
-           this.loadDataFilteredData(extension);
-          }     
-      },
-      clearData(fieldName){
-        if(fieldName === "categories") this.categories = []
-        if(fieldName === "title") this.title = ""
-        if( fieldName ===  'lastUpdated'){ 
-          this.fromInput = ''; 
-          this.toInput = ''; 
-        }
-        const extension = this.getFilterExtension();
-        this.loadDataFilteredData(extension);
-      },
       isItemMarked(_id){
         const index = this.markedItems.findIndex(elem => elem.id === _id);
         if( index > -1 ) return true
@@ -361,20 +195,12 @@ export default {
       const scrollDiv = document.querySelector('#scrollComponent');
        // eslint-disable-next-line no-unused-vars
        scrollDiv.addEventListener('scroll', e => {
-         const totalScroll = Math.round(scrollDiv.scrollTop + scrollDiv.clientHeight); 
+        const totalScroll = Math.round(scrollDiv.scrollTop + scrollDiv.clientHeight); 
       if( totalScroll >= scrollDiv.scrollHeight) {
         this.loadMoreItems();
       }
     });
-      await this.loadData()
-      this.AlphabtsArrayData = AlphabtsArray
-       this.getCategoryFilterData()?.values.map(_category => {
-        if(_category.selected){
-          this.categories.push({
-            ..._category
-          })
-        }
-      } )
+      await this.loadData();
     },
     unmounted(){
       this.currentlySelectedHandler([], true);
@@ -384,11 +210,7 @@ export default {
 
 
 <style scoped>
-.gridScreenBody {
-  height: auto;
-  max-height: 78%;
-  min-height: 78%;
-    }
+
 .emptyData {
     color: #fff;
   }
@@ -400,253 +222,92 @@ export default {
   z-index: 1;
 }
 
-.gridScreenBodyContainer {
-        width: 92%;
-        margin: auto;
-        padding: 20px 0;
-        display: grid;
-        grid-template-areas: "filter filter library library library divider selected selected selected";
-        grid-gap: 2em;
-        grid-template-rows: 510px 100%;
-      }
-
-  .selectedLine {
+ .selectedLine {
     width: 3px;
     background-color: #FCB13B;
     height: 43%;
     margin: auto;
   }
-  .assing_to_right {
-    color: #FCB13B;
-    margin: 10px auto;
-    font-size: 50px;
+
+/* checkbox */
+  .checkboxContainer {
+    display: block;
+    position: relative;
+    padding-left: 15px;
     cursor: pointer;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
-      .gridScreenFilterSection {
-        display: flex;
-        gap: 20px;
-      }
-
-      .gsfilterContainer {
-        grid-area: filter;
-        max-height: 100%;
-        overflow: auto;
-      }
-      .gsTitle {
-        margin: 0px;
-        color: #fff;
-        font-size: 20px;
-        font-weight: 700;
-        text-align: left;
-      }
-      .gsLibraryContainer {
-        grid-area: library;
-        max-height: 100%;
-        overflow: auto;
-      }
-
-      .gsSelectedContainer {
-        grid-area: selected;
-        max-height: 100%;
-        overflow: auto;
-      }
-
-      .gsContentContainer {
-        width: 100%;
-        max-width: 280px;
-      }
-
-      .gsfilterTitle {
-        float: left;
-        color: #8d8d8c;
-        font-size: 18px;
-        font-weight: 900;
-        flex: 2;
-        text-align: left;
-      }
-      .gsfilterClear {
-        float: right;
-        color: #fff;
-        cursor: pointer;
-      }
-
-      /* checkbox */
-      .checkboxContainer {
-        display: block;
-        position: relative;
-        padding-left: 20px;
-        cursor: pointer;
-        font-size: 16px;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
-
-      /* Hide the browser's default checkbox */
-      .checkboxContainer input {
-        position: absolute;
-        opacity: 0;
-        cursor: pointer;
-        height: 0;
-        width: 0;
-      }
-
-      /* Create a custom checkbox */
-      .checkmark {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 16px;
-        width: 16px;
-        background-color: #707070;
-        border: 2px solid #fff;
-        border-radius: 4px;
-      }
-
-      /* On mouse-over, add a grey background color */
-      .checkboxContainer:hover input ~ .checkmark {
-        background-color: #ccc;
-      }
-
-      /* When the checkbox is checked, add a blue background */
-      .checkboxContainer input:checked ~ .checkmark {
-        background-color: #707070;
-      }
-
-      /* Create the checkmark/indicator (hidden when not checked) */
-      .checkmark:after {
-        content: "";
-        position: absolute;
-        display: none;
-      }
-
-      /* Show the checkmark when checked */
-      .checkboxContainer input:checked ~ .checkmark:after {
-        display: block;
-      }
-
-      /* Style the checkmark/indicator */
-      .checkboxContainer .checkmark:after {
-        left: 5px;
-        top: 1px;
-        width: 3px;
-        height: 7px;
-        border: solid white;
-        border-width: 0 3px 3px 0;
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        transform: rotate(45deg);
-      }
-
-      /* end checkbox */
-
-      .gsfilterCategory {
-        display: flex;
-      }
-
-      .liFilterCategories {
-        display: flex;
-        color: white;
-        font-size: 16px;
-        font-weight: 600;
-        gap: 1em;
-        margin-bottom: 10px;
-      }
-
-      .checkboxTitle {
-        margin: 0px;
-        cursor: pointer;
-      }
-
-      .checkboxTitleSelcted {
-        margin: 0px;
-        cursor: pointer;
-        margin-left: 0% !important;
-      }
-
-      /* ################## */
-      .Checkbox-showless p {
-        color: white;
-        padding: 17px 0px 0px 0px;
-        font-weight: bold;
-        text-align: left;
-      }
-      .gs_lib {
-        margin-top: 17px;
-        width: 100%;
-        height: 40px;
-        border-bottom: 2px solid #9d9d9c;
-        cursor: grab;
-      }
-      .gs_lib > div {
-        height: 100%;
-        width: 100%;
-      }
-      .gs_lib > div > label > span {
-        left: 10px;
-        top: 10px;
-      }
-       .gs_lib p {
-         margin-top: 2%;
-        text-align: left;
-        margin-left: 10%;
-      }
-      .dx-draggable-dragging > div{
-          background-color: black !important;
-          border: 2px solid black !important;
-      }
-      .liBorder {
-        border-bottom: 1px solid grey;
-      }
-            
-      .gs_para {
-        color: white;
-        margin-left: 10px;
-        text-align: left;
-      }
-      li.gs_litext {
-        color: white;
-        list-style: auto;
-        margin-left: -24px;
-      }
-      ul.gs_ulmenu {
-        margin-top: -5px;
-      }
-
-  table {
-    color: #fff;
-    margin: 0px;
-    width: 100%;
-  }
-  th {
-    text-align: left;
+  /* Hide the browser's default checkbox */
+  .checkboxContainer input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
   }
 
-  .alphabetsFilter table {
-    color: #8d8d8c;
-  }
-  
-  .alphabetsFilter table tbody tr{
-   height: 30px;
-  }
-   .alphabetsFilter table tbody tr td{
-     cursor: pointer;
-  }
-
-  .selectedAphabets {
-    color: #fff;
+  /* Create a custom checkbox */
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 13px;
+    width: 13px;
+    background-color: #707070;
+    border: 2px solid #fff;
+    border-radius: 4px;
   }
 
-  .gridScreenFilterSection i {
-        font-size: 16px;
-        color: #fff;
-        cursor: pointer;
-      }
-      .activeCurrentView {
-        color: #fcb13b !important;
-      }
+  /* On mouse-over, add a grey background color */
+  .checkboxContainer:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+
+  /* When the checkbox is checked, add a blue background */
+  .checkboxContainer input:checked ~ .checkmark {
+    background-color: #707070;
+  }
+
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+
+  /* Show the checkmark when checked */
+  .checkboxContainer input:checked ~ .checkmark:after {
+    display: block;
+  }
+
+  /* Style the checkmark/indicator */
+  .checkboxContainer .checkmark:after {
+    left: 4px;
+    top: 1px;
+    width: 3px;
+    height: 7px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+
+  /* end checkbox */
+
+  .dx-draggable-dragging {
+      background-color: black !important;
+      border: 2px solid black !important;
+  }
+
+  .activeCurrentView {
+    color: #fcb13b !important;
+  }
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

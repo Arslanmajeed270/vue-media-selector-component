@@ -52,6 +52,36 @@
             "value": ""
           }
         ]
+      },
+      {
+        "title": "File Type",
+        "key": "fileTypes",
+        "type": "checkboxGroup|dateRange|text|alpha",
+        "allowMultiple": true,
+        "values": [
+          {
+            "active": true,
+            "selected": true,
+            "key": "1",
+            "value": "JPG/JPEG"
+          },
+          {
+            "key": "2",
+            "value": "PNG"
+          },
+          {
+            "key": "3",
+            "value": "SVG"
+          },
+          {
+            "key": "4",
+            "value": "GIF"
+          },
+          {
+            "key": "5",
+            "value": "MP4"
+          }
+        ]
       }
     ]
   }

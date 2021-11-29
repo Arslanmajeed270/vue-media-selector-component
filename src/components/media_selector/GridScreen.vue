@@ -1,30 +1,33 @@
 <template>
-      <div class="gridScreenBody" id="scrollComponent">
-        <div class="gridScreenBodyContainer">
-          <div class="gridScreenFilterSection" >
-            <label v-if="selectAllCheckbox" class="checkboxContainer">
-              <input type="checkbox"  @change="selectAllHandler" v-model="selectAllFieldValue"/>
-              <span class="checkmark"></span>
-            </label>
-            <i v-if="filter" class="fas fa-filter" @click="changeCurrentViewHandler('list')"></i>
-            <i v-if="thumbnailView" class="fas fa-th activeCurrentView"></i>
-            <i v-if="listView" class="fas fa-list" @click="changeCurrentViewHandler('list')"></i>
-          </div>
-          <div v-if="itemsObjects?.data?.length"  id="scrollComponent" class="gridScreenImageSection">
-            <div
-            v-for="item in itemsObjects?.data"
-            :key="item.id"
-              class="gridScreenImage"
-            :class="{selectedItem: isItemSelected(item.id)}"
-            @click="selectItemHandler(item)"
-            >
-            <img :src="item.public_url??getIcon(item)" :alt="item.name" width="150" height="90">
-            <p>{{item.name}}</p>
-            </div>
-          </div>
-          <h2 v-else class="emptyData">No data found!</h2>
-        </div>
+   <div class="main-content">
+      <div class="checkbox-list">
+         <div class="top-left">
+            <ul>
+               <li v-if="selectAllCheckbox"><a class="btn btn-transparent">
+                  <label v-if="selectAllCheckbox" class="checkboxContainer">
+                    <input type="checkbox"  @change="selectAllHandler" v-model="selectAllFieldValue"/>
+                    <span class="checkmark"></span>
+                  </label>
+                </a></li>
+               <li v-if="filter" ><a class="btn"><i :class="{activeCurrentView: filtersVisible}" @click="changeFilterHandler()" class="fa fa-filter " aria-hidden="true"></i></a></li>
+               <li v-if="thumbnailView" ><a class="btn"><i class="fa fa-th activeCurrentView" aria-hidden="true"></i></a></li>
+               <li v-if="listView" ><a class="btn"><i @click="changeCurrentViewHandler('list')" class="fa fa-bars" aria-hidden="true"></i></a></li>
+            </ul>
+         </div>
       </div>
+      <div class="img-div" v-show="itemsObjects?.data?.length" id="scrollComponent">
+         <div 
+         class="pic-div"
+          v-for="item in itemsObjects?.data"
+          :key="item.id"
+          @click="selectItemHandler(item)"
+         >
+            <img :class="{selectedItem: isItemSelected(item.id)}" :src="item.public_url??getIcon(item)" :alt="item.name">
+            <span class="img-text">{{item.name}}</span>
+         </div>
+      </div>
+      <h2 v-show="!itemsObjects.data?.length" class="emptyData">No data found!</h2>
+    </div>
 </template>
 
 <script>
@@ -35,37 +38,26 @@ import NoImageIcon from '../../assets/icons/no-image-6663.svg';
 export default {
     name: "GridScreen",
     props: [
-      "closeModal",
       "allowMultiple",
-      "currentlySelected",
       "iconMappings",
-      "popupTitle",
-      "itemsPerPage",
-      "startingPage",
-      "okButtonText",
-      "cancelButtonText",
-
       // Items Hidden
-      "orderDirection",
-      "orderField",
-      "searchBox",
       "selectAllCheckbox",
       "filter",
       "listView",
       "thumbnailView",
 
       "loadData",
-      "filterObjects",
       "itemsObjects",
       "currentlySelectedHandler",
       "currentlySelectedCache",
       "changeCurrentViewHandler",
-      "loadMoreItems"
+      "loadMoreItems",
+      "changeFilterHandler",
+      "filtersVisible"
     ],
     data(){
         return{
             selectAllFieldValue: false,
-            defualtImageIcon: "/assets/icons8-no-image-100.png",
         }
     },
     methods: {
@@ -125,55 +117,18 @@ export default {
 
 <style scoped>
 
-.gridScreenBody {
-        height: auto;
-      max-height: 78%;
-      min-height: 78%;
-      overflow-y: auto;
-    }
+.top-left ul li i {
+  cursor: pointer;
+}
   .emptyData {
     color: #fff;
   }
-      .gridScreenBodyContainer {
-        width: 85%;
-        margin: auto;
-        padding: 20px 0;
-      }
-
-      .gridScreenFilterSection {
-        display: flex;
-        gap: 20px;
-      }
-
-      .gridScreenFilterSection i {
-        font-size: 16px;
-        color: #fff;
-        cursor: pointer;
-      }
-
-      .gridScreenImageSection {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-        gap: 3.5em;
-        padding: 3.5em 0;
-      }
-      .gridScreenImage {
-        width: 160px;
-        height: 100px;
-        background-size: 150px 90px;
-        background-repeat: no-repeat;
-        background-position: center;
-        border-radius: 5px;
-        cursor: pointer;
-        color: #fff;
-        text-align: center;
-      }
 
 
 
-      .selectedItem {
-        border: 4px solid #fcb13b;
-      }
+.selectedItem {
+  border: 4px solid #fcb13b;
+}
 
       .activeCurrentView {
         color: #fcb13b !important;
@@ -182,9 +137,9 @@ export default {
       .checkboxContainer {
         display: block;
         position: relative;
-        padding-left: 20px;
+        padding-left: 15px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 14px;
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
@@ -205,8 +160,8 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
-        height: 16px;
-        width: 16px;
+        height: 13px;
+        width: 13px;
         background-color: #707070;
         border: 2px solid #fff;
         border-radius: 4px;
@@ -236,12 +191,12 @@ export default {
 
       /* Style the checkmark/indicator */
       .checkboxContainer .checkmark:after {
-        left: 5px;
-        top: 1px;
-        width: 3px;
+        left: 3px;
+        top: 0px;
+        width: 5px;
         height: 7px;
         border: solid white;
-        border-width: 0 3px 3px 0;
+        border-width: 0 2px 2px 0;
         -webkit-transform: rotate(45deg);
         -ms-transform: rotate(45deg);
         transform: rotate(45deg);

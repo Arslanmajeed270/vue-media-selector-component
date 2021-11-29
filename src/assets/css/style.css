@@ -546,7 +546,7 @@ footer .closebtn .btn:hover {
 width: 13%;
 padding: 15px;
 float: left;
-
+text-align: left;
 }
 
 /* .img-div .pic-div:nth-child(1) img{

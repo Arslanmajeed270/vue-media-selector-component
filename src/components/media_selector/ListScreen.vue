@@ -100,25 +100,27 @@
       <div class="top-right">
         <p>Selected</p>
       </div>
-      <ol>
-        <li
-          v-for="(item, idx) in getCurrentSelected()"
-          :key="item.id"
-          class="selectedZIndex"
-          :class="{
-            'dx-draggable-dragging': isDragStarted === item.id,
-            isDragOver: dragOverIndex === idx,
-          }"
-          draggable="true"
-          @dragstart="startDrag($event, item)"
-          @dragleave="dragleave()"
-          @dragover="ondragover($event, idx)"
-          @dragenter.prevent
-          @drop="onDrop($event, idx)"
-        >
-          {{ item.name }}
-        </li>
-      </ol>
+      <div class="right-list">
+        <ol>
+          <li
+            v-for="(item, idx) in getCurrentSelected()"
+            :key="item.id"
+            class="selectedZIndex"
+            :class="{
+              'dx-draggable-dragging': isDragStarted === item.id,
+              isDragOver: dragOverIndex === idx,
+            }"
+            draggable="true"
+            @dragstart="startDrag($event, item)"
+            @dragleave="dragleave()"
+            @dragover="ondragover($event, idx)"
+            @dragenter.prevent
+            @drop="onDrop($event, idx)"
+          >
+            {{ item.name }}
+          </li>
+        </ol>
+      </div>
     </div>
   </div>
 </template>
@@ -370,7 +372,8 @@ export default {
 }
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  border-radius: 25px !important;
 }
 
 /* Track */
@@ -387,6 +390,6 @@ export default {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #b30000;
+  background: #555;
 }
 </style>

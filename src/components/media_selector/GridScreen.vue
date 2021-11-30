@@ -244,7 +244,8 @@ export default {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
+  border-radius: 25px !important;
 }
 
 /* Track */
@@ -261,6 +262,6 @@ export default {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #b30000;
+  background: #555;
 }
 </style>

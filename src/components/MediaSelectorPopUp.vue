@@ -414,7 +414,7 @@ export default {
     currentlySelectedHandler(updatedObject, isDefault) {
       const clonedCurrentlySelected = _.cloneDeep(this.currentlySelected);
       if (isDefault && !this.allowMultiple) {
-        this.currentlySelectedCache.push(clonedCurrentlySelected[0]);
+        this.currentlySelectedCache = [clonedCurrentlySelected[0]];
       } else if (isDefault)
         this.currentlySelectedCache = clonedCurrentlySelected;
       else this.currentlySelectedCache = updatedObject;
@@ -564,7 +564,7 @@ export default {
     if (this.currentlySelected?.length) {
       const clonedCurrentlySelected = _.cloneDeep(this.currentlySelected);
       if (!this.allowMultiple) {
-        this.currentlySelectedCache.push(clonedCurrentlySelected[0]);
+        this.currentlySelectedCache = [clonedCurrentlySelected[0]];
       } else {
         this.currentlySelectedCache = _.cloneDeep(this.currentlySelected);
       }

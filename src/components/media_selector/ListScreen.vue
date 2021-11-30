@@ -173,6 +173,10 @@ export default {
       return result;
     },
     onItemChangeHandler(item) {
+      if (!this.allowMultiple) {
+        this.markedItems = [{ ...item }];
+        return;
+      }
       const index = this.markedItems.findIndex((elem) => elem.id === item.id);
       if (index < 0) {
         this.markedItems.push({ ...item });
@@ -187,6 +191,11 @@ export default {
       }
     },
     selectItemHandler() {
+      if (!this.allowMultiple) {
+        this.currentlySelectedHandler(this.markedItems);
+        this.markedItems = [];
+        return;
+      }
       const clonedArray = _.cloneDeep(this.currentlySelectedCache);
       Array.prototype.push.apply(clonedArray, this.markedItems);
       this.currentlySelectedHandler(clonedArray);
@@ -208,6 +217,10 @@ export default {
       const clonedArray = _.cloneDeep(this.currentlySelectedCache);
       let item = this.getItems().find((item) => item.id === Number(itemID));
       if (idx === undefined && !item) return;
+      if (!this.allowMultiple) {
+        this.currentlySelectedHandler([{ ...item }]);
+        return;
+      }
       if (idx === undefined) {
         Array.prototype.push.apply(clonedArray, this.markedItems);
         clonedArray.push({ ...item });

@@ -51,7 +51,7 @@ export default {
       showModal: false,
       currentView: "list", // grid | list
       filtersVisible: true,
-      allowMultiple: false,
+      allowMultiple: true,
       urls: {
         filterUrl: "http://localhost:8080/api/filter.json",
         itemUrl: "http://localhost:8080/api/item.json",

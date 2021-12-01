@@ -588,6 +588,7 @@ export default {
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0, 0, 0); /* Fallback color */
   background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  overflow: hidden;
 }
 
 /* Modal Content */
@@ -606,6 +607,7 @@ export default {
   -webkit-animation-duration: 0.4s;
   animation-name: animatetop;
   animation-duration: 0.4s;
+  overflow: hidden;
 }
 
 /* Add Animation */

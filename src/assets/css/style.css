@@ -549,11 +549,11 @@ width: 100%;
     } */
 #scrollComponent {
   overflow-y: auto;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 200px) !important;
 }
 .filter-container-wrapper {
   overflow-y: auto;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 200px) !important;
 }
 .pic-div img {
   width: 100%;
